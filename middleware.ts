@@ -21,6 +21,15 @@ export async function middleware(request: NextRequest) {
     '/favicon.ico',
   ];
 
+  // Define protected paths that require authentication
+  const protectedPaths = [
+    '/dashboard',
+    '/admin/dashboard',
+    '/teacher/dashboard', 
+    '/student/dashboard',
+    '/parent/dashboard',
+  ];
+
   // If it's a public path, continue
   const isPublicPath = publicPaths.some((path) => 
     pathname === path || pathname.startsWith(`${path}/`)
