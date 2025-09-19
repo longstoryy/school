@@ -1,0 +1,155 @@
+# Define networks
+networks:
+  school-network:
+    driver: bridge
+
+# Define volumes
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+  node_modules:
+  redis_data:
+  pgadmin_data:
+
+services:
+  # Database Service
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+      - ./backend/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-school_db}
+      - POSTGRES_USER=${POSTGRES_USER:-school_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-school_password}
+    ports:
+      - "5432:5432"
+    networks:
+      - school-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-school_user} -d ${POSTGRES_DB:-school_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Redis Service
+  redis:
+    image: redis:7-alpine
+    command: redis-server --requirepass s3cure_redis_pass_123! --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    environment:
+      - REDIS_PASSWORD=s3cure_redis_pass_123!
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - school-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "s3cure_redis_pass_123!", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Backend Service
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: development
+    volumes:
+      - ./backend:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    entrypoint: /app/entrypoint.sh
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DJANGO_SETTINGS_MODULE=core.settings
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379/0
+      - POSTGRES_DB=${POSTGRES_DB:-school_db}
+      - POSTGRES_USER=${POSTGRES_USER:-school_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-school_password}
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
+      - SECRET_KEY=${DJANGO_SECRET_KEY:-your-secret-key-here}
+      - DJANGO_DEBUG=${DJANGO_DEBUG:-True}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - school-network
+    restart: unless-stopped
+
+  # Frontend Service
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ${NODE_ENV:-development}
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+      - NEXTAUTH_URL_INTERNAL=${NEXTAUTH_URL_INTERNAL}
+      - API_URL_INTERNAL=${API_URL_INTERNAL:-http://backend:8000}
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - school-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Nginx Service (for production)
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - school-network
+    restart: unless-stopped
+
+  # PGAdmin (for database management)
+  pgadmin:
+    image: dpage/pgadmin4:7.1
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL:-admin@school.com}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD:-admin}
+      - PGADMIN_CONFIG_SERVER_MODE=False
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    networks:
+      - school-network
+    restart: unless-stopped
