@@ -10,6 +10,12 @@ from django.http import JsonResponse
 from rest_framework_simplejwt.views import TokenRefreshView
 from .views import HealthCheckView
 
+
+# Configure admin site
+admin.site.site_header = "AgriBuy Administration"
+admin.site.site_title = "AgriBuy Admin Portal"
+admin.site.index_title = "Welcome to AgriBuy Admin"
+
 def home(request):
     return JsonResponse({
         'message': 'Welcome to the School Management System API',
@@ -27,6 +33,18 @@ def home(request):
             'user': {
                 'profile': '/api/users/me/',
                 'profile_update': '/api/users/profile/'
+            },
+            'students': {
+                'list_create': '/api/students/',
+                'detail': '/api/students/{id}/',
+                'stats': '/api/students/stats/',
+                'search': '/api/students/search/',
+                'by_status': '/api/students/status/{status}/',
+                'by_class': '/api/students/class/{class_name}/',
+                'recent_admissions': '/api/students/recent-admissions/',
+                'bulk_update': '/api/students/bulk/update-status/',
+                'documents': '/api/students/{id}/documents/',
+                'notes': '/api/students/{id}/notes/'
             }
         },
         'status': 'operational'
@@ -36,6 +54,8 @@ def home(request):
 api_patterns = [
     # Authentication
     path('auth/', include('accounts.urls')),
+    # Students management
+    path('students/', include('students.urls')),
     # Add other app URLs here
 ]
 

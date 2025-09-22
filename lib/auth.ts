@@ -65,10 +65,12 @@ const authConfig = {
 
         try {
           // Use internal API URL for server-side requests, public URL for client-side
-          const apiUrl = process.env.API_URL_INTERNAL || process.env.NEXT_PUBLIC_API_URL;
+          const apiUrl = process.env.NODE_ENV === 'production' 
+          ? (process.env.API_URL_INTERNAL || 'http://backend:8000/api')
+          : 'http://localhost:8000/api';
           
           // Call Django backend API for authentication
-          const response = await fetch(`${apiUrl}/api/auth/token/`, {
+          const response = await fetch(`${apiUrl}/auth/token/`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -108,15 +110,17 @@ const authConfig = {
     strategy: 'jwt' as const,
   },
   secret: process.env.NEXTAUTH_SECRET!,
-  debug: false,
+  debug: true,
   pages: {
     signIn: '/login',
+    error: '/auth/error',
   },
   callbacks: {
     async jwt({ token, user }: { token: JWT; user?: any }) {
       if (user) {
         token.id = user.id;
-        token.role = user.role || 'user';
+        token.role = user.user_type || user.role || 'STUDENT';
+        token.user_type = user.user_type || 'STUDENT';
       }
       return token;
     },
@@ -124,6 +128,7 @@ const authConfig = {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
+        session.user.user_type = token.user_type as string;
       }
       return session;
     },

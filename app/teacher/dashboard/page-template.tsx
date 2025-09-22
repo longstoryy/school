@@ -9,19 +9,13 @@ import {
   Shield, Globe, Database, Mail, Smartphone, UserCheck, UserX, Home, MapPin,
   FolderOpen, StickyNote, CheckSquare, Phone, Video, CreditCard, UserPlus,
   Trash2, Heart, Zap, Archive, Download, Upload, Share2, Search, Sun, Moon,
-  Maximize, Plus, Languages, CalendarDays, Command, Trophy
+  Maximize, Plus, Languages, CalendarDays, Command
 } from 'lucide-react';
 
-export default function StudentDashboard() {
+export default function AdminDashboard() {
   const [user, setUser] = useState<any>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
   const [darkMode, setDarkMode] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [showSearchModal, setShowSearchModal] = useState(false);
-  const [notificationOpen, setNotificationOpen] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -31,20 +25,6 @@ export default function StudentDashboard() {
     } else {
       router.push('/login');
     }
-
-    // Ctrl+K search functionality
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault();
-        setShowSearchModal(true);
-      }
-      if (e.key === 'Escape') {
-        setShowSearchModal(false);
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
   }, [router]);
 
   const handleLogout = () => {
@@ -52,171 +32,6 @@ export default function StudentDashboard() {
     localStorage.removeItem('token');
     router.push('/login');
   };
-
-  const toggleSubmenu = (menuName: string) => {
-    setActiveSubmenu(activeSubmenu === menuName ? null : menuName);
-  };
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    if (query.length > 0) {
-      const mockResults = [
-        { title: 'My Classes', path: '/student/classes', type: 'page' },
-        { title: 'My Grades', path: '/student/grades', type: 'page' },
-        { title: 'Assignments', path: '/student/assignments', type: 'page' },
-        { title: 'Math Class 10A', path: '/student/classes/math-10a', type: 'class' },
-        { title: 'Study Materials', path: '/student/materials', type: 'resource' },
-      ].filter(item => item.title.toLowerCase().includes(query.toLowerCase()));
-      setSearchResults(mockResults);
-    }
-  };
-
-  // Comprehensive Student Sidebar Items
-  const sidebarItems = [
-    {
-      title: 'Main',
-      items: [
-        { name: 'Dashboard', icon: LayoutDashboard, href: '/student/dashboard', active: true },
-        { name: 'My Profile', icon: User, href: '/student/profile' },
-      ]
-    },
-    {
-      title: 'My Learning',
-      items: [
-        { 
-          name: 'My Classes', 
-          icon: GraduationCap,
-          submenu: [
-            { name: 'Current Classes', href: '/student/classes' },
-            { name: 'Class Schedule', href: '/student/schedule' },
-            { name: 'Class Materials', href: '/student/materials' },
-          ]
-        },
-        { name: 'My Subjects', icon: BookOpen, href: '/student/subjects' },
-        { 
-          name: 'Attendance', 
-          icon: Clock,
-          submenu: [
-            { name: 'My Attendance', href: '/student/attendance' },
-            { name: 'Attendance History', href: '/student/attendance/history' },
-          ]
-        },
-      ]
-    },
-    {
-      title: 'Academics',
-      items: [
-        { 
-          name: 'Assignments', 
-          icon: ClipboardList,
-          submenu: [
-            { name: 'Pending Assignments', href: '/student/assignments/pending' },
-            { name: 'Submitted Work', href: '/student/assignments/submitted' },
-            { name: 'Assignment History', href: '/student/assignments/history' },
-          ]
-        },
-        { 
-          name: 'Examinations', 
-          icon: FileText,
-          submenu: [
-            { name: 'Upcoming Exams', href: '/student/exams/upcoming' },
-            { name: 'Exam Results', href: '/student/exams/results' },
-            { name: 'Exam History', href: '/student/exams/history' },
-          ]
-        },
-        { name: 'Timetable', icon: Calendar, href: '/student/timetable' },
-        { name: 'Study Materials', icon: Library, href: '/student/study-materials' },
-      ]
-    },
-    {
-      title: 'Performance & Progress',
-      items: [
-        { name: 'My Grades', icon: BarChart3, href: '/student/grades' },
-        { name: 'Progress Reports', icon: TrendingUp, href: '/student/progress' },
-        { name: 'Academic Records', icon: FileText, href: '/student/records' },
-        { name: 'Achievements', icon: Award, href: '/student/achievements' },
-      ]
-    },
-    {
-      title: 'Communication',
-      items: [
-        { name: 'Announcements', icon: Bell, href: '/student/announcements' },
-        { name: 'Messages', icon: MessageCircle, href: '/student/messages' },
-        { name: 'Teacher Chat', icon: MessageCircle, href: '/student/teacher-chat' },
-        { name: 'Class Discussion', icon: Users, href: '/student/class-discussion' },
-      ]
-    },
-    {
-      title: 'Learning Tools',
-      items: [
-        { 
-          name: 'Study Resources', 
-          icon: FolderOpen,
-          submenu: [
-            { name: 'My Documents', href: '/student/documents' },
-            { name: 'Downloaded Materials', href: '/student/downloads' },
-            { name: 'Notes & Notebooks', href: '/student/notes' },
-            { name: 'Reference Library', href: '/student/library' },
-          ]
-        },
-        { 
-          name: 'Online Learning', 
-          icon: Globe,
-          submenu: [
-            { name: 'Virtual Classes', href: '/student/virtual-classes' },
-            { name: 'Video Lectures', href: '/student/lectures' },
-            { name: 'Interactive Sessions', href: '/student/interactive' },
-            { name: 'Study Groups', href: '/student/study-groups' },
-          ]
-        },
-        { 
-          name: 'Study Tools', 
-          icon: Zap,
-          submenu: [
-            { name: 'Study Planner', href: '/student/planner' },
-            { name: 'Flashcards', href: '/student/flashcards' },
-            { name: 'Practice Tests', href: '/student/practice' },
-            { name: 'Study Timer', href: '/student/timer' },
-          ]
-        },
-        { name: 'Calculator', icon: Target, href: '/student/calculator' },
-      ]
-    },
-    {
-      title: 'Extra Activities',
-      items: [
-        { 
-          name: 'Clubs & Societies', 
-          icon: Users,
-          submenu: [
-            { name: 'My Clubs', href: '/student/clubs' },
-            { name: 'Available Clubs', href: '/student/clubs/available' },
-            { name: 'Club Events', href: '/student/clubs/events' },
-          ]
-        },
-        { name: 'Sports & Games', icon: Trophy, href: '/student/sports' },
-        { name: 'Events & Competitions', icon: Award, href: '/student/events' },
-      ]
-    },
-    {
-      title: 'Financial & Services',
-      items: [
-        { name: 'Fee Payment', icon: CreditCard, href: '/student/fees' },
-        { name: 'Fee History', icon: DollarSign, href: '/student/fee-history' },
-        { name: 'Scholarships', icon: Award, href: '/student/scholarships' },
-        { name: 'Transport', icon: Car, href: '/student/transport' },
-      ]
-    },
-    {
-      title: 'Settings & Support',
-      items: [
-        { name: 'Profile Settings', icon: User, href: '/student/profile' },
-        { name: 'Preferences', icon: Settings, href: '/student/preferences' },
-        { name: 'Help & Support', icon: MessageCircle, href: '/student/support' },
-        { name: 'Notification Settings', icon: Bell, href: '/student/notifications' },
-      ]
-    },
-  ];
 
   if (!user) {
     return (
@@ -246,115 +61,29 @@ export default function StudentDashboard() {
         </div>
 
         {/* Navigation */}
-        <nav className="mt-5 px-2 space-y-1 overflow-y-auto" style={{maxHeight: 'calc(100vh - 200px)'}}>
-          {sidebarItems.map((section, sectionIndex) => (
-            <div key={sectionIndex} className="space-y-1">
-              {/* Section Header */}
-              <div className={`px-3 py-2 text-xs font-semibold uppercase tracking-wider ${
-                darkMode ? 'text-gray-500' : 'text-gray-400'
-              }`}>
-                {section.title}
-              </div>
-              
-              {section.items.map((item, itemIndex) => (
-                <div key={itemIndex}>
-                  {item.submenu ? (
-                    <div>
-                      <button
-                        onClick={() => toggleSubmenu(item.name)}
-                        className={`w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md group transition-all duration-200 hover:translate-x-1 ${
-                          activeSubmenu === item.name 
-                            ? (darkMode ? 'bg-green-800 text-white shadow-lg' : 'bg-green-100 text-green-900 shadow-md')
-                            : (darkMode ? 'text-gray-300 hover:bg-gray-700/50' : 'text-gray-700 hover:bg-gray-50')
-                        }`}
-                      >
-                        <div className="flex items-center space-x-3">
-                          <item.icon className={`w-5 h-5 transition-colors duration-200 ${
-                            activeSubmenu === item.name 
-                              ? (darkMode ? 'text-white' : 'text-green-600')
-                              : (darkMode ? 'text-gray-400' : 'text-gray-500')
-                          }`} />
-                          <span>{item.name}</span>
-                          {item.submenu.length > 0 && (
-                            <span className={`ml-auto text-xs px-1.5 py-0.5 rounded-full ${
-                              darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'
-                            }`}>
-                              {item.submenu.length}
-                            </span>
-                          )}
-                        </div>
-                        {activeSubmenu === item.name ? (
-                          <ChevronDown className="w-4 h-4 transition-transform duration-200" />
-                        ) : (
-                          <ChevronRight className="w-4 h-4 transition-transform duration-200" />
-                        )}
-                      </button>
-                      {activeSubmenu === item.name && (
-                        <div className="ml-6 mt-1 space-y-1 animate-fadeIn">
-                          {item.submenu.map((subItem, subIndex) => (
-                            <a
-                              key={subIndex}
-                              href={subItem.href}
-                              className={`flex items-center space-x-3 px-3 py-2 text-sm rounded-md transition-all duration-200 hover:translate-x-1 ${
-                                darkMode 
-                                  ? 'text-gray-400 hover:bg-gray-700/50 hover:text-white' 
-                                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                              }`}
-                            >
-                              <div className={`w-2 h-2 rounded-full transition-colors duration-200 ${
-                                darkMode ? 'bg-gray-600' : 'bg-gray-300'
-                              }`}></div>
-                              <span>{subItem.name}</span>
-                            </a>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <a
-                      href={item.href}
-                      className={`flex items-center space-x-3 px-3 py-2 text-sm font-medium rounded-md group transition-all duration-200 hover:translate-x-1 ${
-                        item.active
-                          ? (darkMode ? 'bg-green-800 text-white shadow-lg' : 'bg-green-100 text-green-900 shadow-md')
-                          : (darkMode ? 'text-gray-300 hover:bg-gray-700/50' : 'text-gray-700 hover:bg-gray-50')
-                      }`}
-                    >
-                      <item.icon className={`w-5 h-5 transition-colors duration-200 ${
-                        item.active 
-                          ? (darkMode ? 'text-white' : 'text-green-600')
-                          : (darkMode ? 'text-gray-400' : 'text-gray-500')
-                      }`} />
-                      <span>{item.name}</span>
-                      {item.name === 'Dashboard' && (
-                        <span className="ml-auto w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                      )}
-                    </a>
-                  )}
-                </div>
-              ))}
-              
-              {/* Section Divider */}
-              {sectionIndex < sidebarItems.length - 1 && (
-                <div className={`my-3 mx-3 border-t ${
-                  darkMode ? 'border-gray-700' : 'border-gray-200'
-                }`}></div>
-              )}
-            </div>
-          ))}
+        <nav className="mt-5 px-2">
+          <a href="/admin/dashboard" className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${darkMode ? 'text-white bg-gray-900' : 'text-gray-900 bg-gray-100'}`}>
+            <LayoutDashboard className="mr-4 h-6 w-6" />
+            Dashboard
+          </a>
+          <a href="/admin/students" className={`mt-1 group flex items-center px-2 py-2 text-base font-medium rounded-md ${darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-600 hover:bg-gray-50'}`}>
+            <Users className="mr-4 h-6 w-6" />
+            Students
+          </a>
+          <a href="/admin/teachers" className={`mt-1 group flex items-center px-2 py-2 text-base font-medium rounded-md ${darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-600 hover:bg-gray-50'}`}>
+            <GraduationCap className="mr-4 h-6 w-6" />
+            Teachers
+          </a>
         </nav>
 
-        {/* Logout Button */}
+        {/* Logout */}
         <div className="absolute bottom-0 w-full p-4">
           <button
             onClick={handleLogout}
-            className={`w-full flex items-center space-x-3 px-3 py-2 text-sm font-medium rounded-md ${
-              darkMode 
-                ? 'text-gray-400 hover:bg-red-600/20 hover:text-red-400' 
-                : 'text-gray-600 hover:bg-red-50 hover:text-red-600'
-            }`}
+            className={`w-full flex items-center px-2 py-2 text-base font-medium rounded-md ${darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-600 hover:bg-gray-50'}`}
           >
-            <LogOut className="w-5 h-5" />
-            <span>Logout</span>
+            <LogOut className="mr-4 h-6 w-6" />
+            Logout
           </button>
         </div>
       </div>
@@ -374,76 +103,19 @@ export default function StudentDashboard() {
                     <Menu className="w-6 h-6" />
                   </button>
                   <h1 className={`ml-4 text-2xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                    Student Dashboard
+                    Admin Dashboard
                   </h1>
                 </div>
                 <div className="flex items-center space-x-4">
-                  {/* Search Button */}
-                  <button
-                    onClick={() => setShowSearchModal(true)}
-                    className={`flex items-center space-x-2 px-3 py-2 rounded-lg border transition-all duration-200 hover:shadow-md ${
-                      darkMode 
-                        ? 'bg-gray-700/50 border-gray-600 text-gray-400 hover:bg-gray-700' 
-                        : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-white hover:border-green-200'
-                    }`}
-                  >
-                    <Search className="w-4 h-4" />
-                    <span className="hidden sm:block">Search...</span>
-                    <div className={`flex items-center space-x-1 px-2 py-1 rounded text-xs font-medium ${
-                      darkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-200 text-gray-600'
-                    }`}>
-                      <Command className="w-3 h-3" />
-                      <span>K</span>
-                    </div>
-                  </button>
-                  
-                  {/* Academic Year */}
-                  <button className={`flex items-center space-x-2 px-3 py-2 rounded-lg border transition-all duration-200 hover:shadow-md ${
-                    darkMode 
-                      ? 'bg-gray-700/50 border-gray-600 text-white hover:bg-gray-700' 
-                      : 'bg-white border-gray-200 text-gray-700 hover:border-green-200'
-                  }`}>
-                    <CalendarDays className="w-4 h-4" />
-                    <span className="text-sm font-medium">2024/2025</span>
-                    <ChevronDown className="w-3 h-3" />
-                  </button>
-
-                  {/* Dark Mode Toggle */}
                   <button
                     onClick={() => setDarkMode(!darkMode)}
-                    className={`p-2 rounded-lg border transition-all duration-200 hover:shadow-md ${
-                      darkMode 
-                        ? 'bg-gray-700/50 border-gray-600 text-white hover:bg-gray-700' 
-                        : 'bg-white border-gray-200 text-gray-700 hover:border-green-200'
-                    }`}
+                    className={`p-2 rounded-md ${darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-600 hover:bg-gray-100'}`}
                   >
-                    {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                    {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                   </button>
-
-                  {/* Notifications */}
-                  <button
-                    onClick={() => setNotificationOpen(!notificationOpen)}
-                    className={`p-2 rounded-lg border transition-all duration-200 hover:shadow-md relative ${
-                      darkMode 
-                        ? 'bg-gray-700/50 border-gray-600 text-white hover:bg-gray-700' 
-                        : 'bg-white border-gray-200 text-gray-700 hover:border-green-200'
-                    }`}
-                  >
-                    <Bell className="w-4 h-4" />
-                    <span className="absolute -top-1 -right-1 block h-3 w-3 rounded-full bg-red-400 ring-2 ring-white animate-pulse"></span>
-                  </button>
-
-                  {/* Profile */}
-                  <button
-                    onClick={() => setProfileOpen(!profileOpen)}
-                    className="flex items-center space-x-2 p-1 rounded-lg transition-all duration-200 hover:bg-gray-100"
-                  >
-                    <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm font-semibold">
-                        {user.name?.charAt(0) || 'T'}
-                      </span>
-                    </div>
-                  </button>
+                  <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                    Welcome, {user.name}
+                  </span>
                 </div>
               </div>
             </div>
@@ -468,10 +140,10 @@ export default function StudentDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h1 className="text-4xl font-bold text-white mb-3 tracking-tight">
-                      Welcome back, {user.name?.split(' ')[0] || 'Student'}! 🎓
+                      Welcome back, {user.name?.split(' ')[0] || 'Administrator'}! 👋
                     </h1>
                     <p className="text-lg text-white/90 font-medium">
-                      Ready to learn and achieve your goals today?
+                      Here's what's happening at your school today.
                     </p>
                     <div className="flex items-center mt-4 space-x-4">
                       <div className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
@@ -640,54 +312,6 @@ export default function StudentDashboard() {
                       darkMode ? 'bg-gray-700' : 'bg-gray-200'
                     }`}>
                       <div className="h-2 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full animate-pulse" style={{width: '99.4%'}}></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* My Students */}
-              <div className={`group relative p-6 rounded-2xl shadow-lg border transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 cursor-pointer ${
-                darkMode ? 'bg-gradient-to-br from-gray-800 to-gray-700 border-gray-600' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'
-              }`}>
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-blue-600/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                
-                <div className="relative z-10">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
-                      <Users className="h-6 w-6 text-white" />
-                    </div>
-                    <div className="text-right">
-                      <div className={`text-xs font-semibold uppercase tracking-wider ${
-                        darkMode ? 'text-blue-400' : 'text-blue-600'
-                      }`}>My Students</div>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <h3 className={`text-2xl font-bold ${
-                      darkMode ? 'text-white' : 'text-gray-900'
-                    }`}>247</h3>
-                    <p className={`text-sm font-medium ${
-                      darkMode ? 'text-gray-400' : 'text-gray-600'
-                    }`}>Total Students</p>
-                    
-                    <div className="flex items-center space-x-4 text-xs">
-                      <div className="flex items-center space-x-1">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Present: 234</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                        <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Absent: 13</span>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-3">
-                      <div className={`w-full h-2 rounded-full ${
-                        darkMode ? 'bg-gray-700' : 'bg-gray-200'
-                      }`}>
-                        <div className="h-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full animate-pulse" style={{width: '95%'}}></div>
-                      </div>
                     </div>
                   </div>
                 </div>

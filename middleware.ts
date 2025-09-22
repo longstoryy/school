@@ -14,6 +14,9 @@ export async function middleware(request: NextRequest) {
     '/register',
     '/test-styling',
     '/test-backend',
+    '/test-dashboard',
+    '/direct-login',
+    '/auth/error',
     '/api/auth',
     '/api/test-backend',
     '/_next',
@@ -39,13 +42,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // If there's no token and it's not a public path, redirect to login
-  if (!token) {
-    const url = new URL('/login', request.url);
-    url.searchParams.set('callbackUrl', pathname);
-    return NextResponse.redirect(url);
-  }
-
+  // Authentication temporarily disabled
   return NextResponse.next();
 }
 
