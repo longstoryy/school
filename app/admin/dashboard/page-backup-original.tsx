@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { 
   LayoutDashboard, Users, GraduationCap, BookOpen, Calendar, Clock, FileText, BarChart3, TrendingUp, Settings, Bell, MessageCircle, Mail, User, Target, ClipboardList, Award, Building, Car, Library, Shield, Globe, Database, Smartphone, UserCheck, UserX, Home, MapPin, FolderOpen, StickyNote, CheckSquare, Phone, Video, CreditCard, UserPlus, Trash2, Heart, Zap, Archive, Download, Upload, Share2, Search, Sun, Moon, Maximize, Plus, Languages, CalendarDays, Command, Trophy, Menu, X, ChevronDown, ChevronRight, LogOut, DollarSign, Lock
 } from 'lucide-react';
-import GlassMorphismNavigation from './navigation';
 
 // 🎯 Premium Enterprise TypeScript Interfaces
 interface DashboardStats {
@@ -164,9 +163,8 @@ export default function AdminDashboard() {
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
   const [darkMode, setDarkMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [showSearchModal, setShowSearchModal] = useState(false);
-  const [expandedSections, setExpandedSections] = useState<{[key: string]: boolean}>({});
   const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [showSearchModal, setShowSearchModal] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [customizerOpen, setCustomizerOpen] = useState(false);
@@ -368,10 +366,11 @@ export default function AdminDashboard() {
   };
 
   const toggleSection = (sectionTitle: string) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [sectionTitle]: !prev[sectionTitle]
-    }));
+    setCollapsedSections(prev => 
+      prev.includes(sectionTitle) 
+        ? prev.filter(s => s !== sectionTitle)
+        : [...prev, sectionTitle]
+    );
   };
 
   const toggleFullscreen = () => {
@@ -518,54 +517,31 @@ export default function AdminDashboard() {
 
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
-      {/* 🎨 Glass Morphism Navigation */}
-      <GlassMorphismNavigation
-        darkMode={darkMode}
-        onDarkModeToggle={handleDarkModeToggle}
-        user={user}
-        role="admin"
-        onLogout={handleLogout}
-        onSidebarToggle={handleSidebarToggle}
-        sidebarOpen={sidebarOpen}
-      />
-      {/* 🚀 Premium Glass Sidebar */}
+      {/* 🚀 Premium Enterprise Sidebar */}
       <div 
-        data-sidebar
-        className={`fixed inset-y-0 left-0 z-30 transform transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] lg:translate-x-0 flex flex-col group ${
+        className={`fixed inset-y-0 left-0 z-40 transform transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] lg:translate-x-0 flex flex-col ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } ${
-          sidebarOpen ? 'w-64' : 'lg:w-14 lg:hover:w-64'
+          sidebarOpen ? 'w-80' : 'lg:w-20'
         }`}
-        onMouseEnter={() => {
-          if (!sidebarOpen) {
-            document.body.classList.add('sidebar-hover-active');
-          }
-        }}
-        onMouseLeave={() => {
-          if (!sidebarOpen) {
-            document.body.classList.remove('sidebar-hover-active');
-          }
-        }}
         style={{
-          background: 'linear-gradient(135deg, rgba(248, 250, 252, 0.98) 0%, rgba(241, 245, 249, 0.95) 50%, rgba(226, 232, 240, 0.92) 100%)',
-          backdropFilter: 'blur(24px)',
-          WebkitBackdropFilter: 'blur(24px)',
-          borderRight: '1px solid rgba(148, 163, 184, 0.2)',
-          borderTop: '3px solid',
-          borderImage: 'linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899, #f59e0b) 1',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
+          background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          borderRight: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
         }}
       >
         {/* 🎯 Sidebar Header */}
-        <div className="flex items-center justify-between p-4 border-b border-white/10">
+        <div className="flex items-center justify-between p-6 border-b border-white/10">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
-              <Shield className="w-4 h-4 text-white" />
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Shield className="w-6 h-6 text-white" />
             </div>
             {sidebarOpen && (
               <div>
-                <h1 className="text-xl font-bold text-slate-800">Admin Panel</h1>
-                <p className="text-xs text-slate-600">Enterprise Dashboard</p>
+                <h1 className="text-xl font-bold text-white">Admin Panel</h1>
+                <p className="text-xs text-gray-400">Enterprise Dashboard</p>
               </div>
             )}
           </div>
@@ -578,22 +554,18 @@ export default function AdminDashboard() {
         </div>
 
         {/* 🔍 Premium Search Bar */}
-        <div className={`transition-all duration-500 overflow-hidden ${
-          sidebarOpen ? 'p-4 opacity-100' : 'lg:p-0 lg:opacity-0 lg:group-hover:opacity-100 lg:group-hover:p-4'
-        }`}>
-          <button
-            onClick={() => setShowSearchModal(true)}
-            className="w-full flex items-center px-4 py-3 rounded-xl bg-white/30 border border-slate-200/40 text-slate-700 hover:bg-white/50 hover:border-slate-300/50 transition-all duration-500 group shadow-sm"
-          >
-            <Search className="w-4 h-4 mr-3 group-hover:text-gray-900 transition-colors" />
-            <span className={`text-sm font-medium transition-all duration-500 whitespace-nowrap ${
-              sidebarOpen ? 'opacity-100 w-auto' : 'lg:opacity-0 lg:w-0 lg:group-hover:opacity-100 lg:group-hover:w-auto'
-            }`}>Search...</span>
-            <div className={`ml-auto px-2 py-1 rounded-md bg-gray-100/60 text-xs font-medium text-gray-600 transition-all duration-500 ${
-              sidebarOpen ? 'opacity-100' : 'lg:opacity-0 lg:group-hover:opacity-100'
-            }`}>⌘K</div>
-          </button>
-        </div>
+        {sidebarOpen && (
+          <div className="p-4">
+            <button
+              onClick={() => setShowSearchModal(true)}
+              className="w-full flex items-center px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 hover:border-white/20 transition-all duration-300 group"
+            >
+              <Search className="w-5 h-5 mr-3 group-hover:text-white transition-colors" />
+              <span className="text-sm">Search...</span>
+              <div className="ml-auto px-2 py-1 rounded-md bg-white/10 text-xs font-medium">⌘K</div>
+            </button>
+          </div>
+        )}
 
         {/* 🎨 Premium Navigation */}
         <nav className="flex-1 overflow-y-auto px-4 py-2 vuexy-scrollbar">
@@ -601,24 +573,24 @@ export default function AdminDashboard() {
             {sidebarItems.map((section, sectionIndex) => (
               <div key={sectionIndex} className="space-y-1">
                 {/* 🏷️ Section Header */}
-                <div className={`px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500/90 transition-all duration-500 overflow-hidden ${
-                  sidebarOpen ? 'opacity-100 h-auto' : 'lg:opacity-0 lg:h-0 lg:group-hover:opacity-100 lg:group-hover:h-auto'
-                }`}>
-                  {section.title}
-                </div>
+                {sidebarOpen && (
+                  <div className="px-3 py-2 text-xs font-bold uppercase tracking-wider text-gray-400/70">
+                    {section.title}
+                  </div>
+                )}
                 
                 {/* 🎯 Menu Items */}
                 {section.items.map((item, itemIndex) => (
                   <div key={itemIndex} className="relative group">
                     <a
                       href={item.href}
-                      className={`premium-menu-item flex items-center px-3 py-3 rounded-xl transition-all duration-300 relative overflow-hidden group ${
+                      className={`premium-menu-item flex items-center px-3 py-3 rounded-xl transition-all duration-300 relative overflow-hidden ${
                         item.active
-                          ? 'bg-gradient-to-r from-blue-500/15 to-purple-500/15 text-gray-800 border border-blue-400/30 shadow-md'
-                          : 'text-gray-700 hover:text-gray-900 hover:bg-white/30'
+                          ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-white border border-blue-500/30'
+                          : 'text-gray-300 hover:text-white hover:bg-white/5'
                       } ${sidebarOpen ? 'space-x-3' : 'justify-center'}`}
                       style={{
-                        backdropFilter: item.active ? 'blur(15px)' : 'none'
+                        backdropFilter: item.active ? 'blur(10px)' : 'none'
                       }}
                     >
                       {/* 🌈 Animated Border Gradient */}
@@ -628,47 +600,36 @@ export default function AdminDashboard() {
                           padding: '1px'
                         }}
                       >
-                        <div className="w-full h-full rounded-xl bg-gradient-to-r from-white/80 to-yellow-50/60"></div>
+                        <div className="w-full h-full rounded-xl bg-gradient-to-r from-gray-800/90 to-gray-700/90"></div>
                       </div>
                       
                       {/* 🎯 Icon */}
-                      <div className="relative z-10 flex-shrink-0">
-                        <item.icon className={`w-4 h-4 transition-all duration-300 group-hover:scale-110 ${
-                          item.active ? 'text-blue-600' : 'text-gray-600 group-hover:text-gray-900'
+                      <div className="relative z-10">
+                        <item.icon className={`w-5 h-5 transition-all duration-300 group-hover:scale-110 ${
+                          item.active ? 'text-blue-400' : 'text-gray-400 group-hover:text-white'
                         }`} />
                       </div>
                       
                       {/* 📝 Label */}
-                      <span className={`relative z-10 text-sm font-medium transition-all duration-300 overflow-hidden ${
-                        sidebarOpen 
-                          ? 'opacity-100 w-auto' 
-                          : 'lg:opacity-0 lg:group-hover:opacity-100 lg:w-0 lg:group-hover:w-auto'
-                      } ${
-                        item.active ? 'text-gray-800' : 'group-hover:text-gray-900'
-                      }`}>
-                        {item.name}
-                      </span>
-                      
-                      {/* 💬 Tooltip for collapsed sidebar */}
-                      {!sidebarOpen && (
-                        <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                      {sidebarOpen && (
+                        <span className={`relative z-10 text-sm font-medium transition-all duration-300 ${
+                          item.active ? 'text-white' : 'group-hover:text-white'
+                        }`}>
                           {item.name}
-                        </div>
+                        </span>
                       )}
                       
                       {/* ✨ Active Indicator */}
                       {item.active && (
-                        <div className="absolute right-2 w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                        <div className="absolute right-2 w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
                       )}
                     </a>
                   </div>
                 ))}
                 
                 {/* 📏 Section Divider */}
-                {sectionIndex < sidebarItems.length - 1 && (
-                  <div className={`mx-3 my-4 border-t border-white/10 transition-all duration-500 ${
-                    sidebarOpen ? 'opacity-100' : 'lg:opacity-0 lg:group-hover:opacity-100'
-                  }`}></div>
+                {sectionIndex < sidebarItems.length - 1 && sidebarOpen && (
+                  <div className="mx-3 my-4 border-t border-white/10"></div>
                 )}
               </div>
             ))}
@@ -676,43 +637,34 @@ export default function AdminDashboard() {
         </nav>
 
         {/* 👤 Premium User Profile */}
-        <div className="p-3 border-t border-gray-200/20">
-          <div className={`flex items-center rounded-xl bg-white/20 hover:bg-white/40 transition-all duration-300 group shadow-sm ${
-            sidebarOpen || (!sidebarOpen && 'group-hover:w-64') ? 'p-3 space-x-3' : 'p-2 justify-center'
-          }`}>
-            <div className="relative flex-shrink-0">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
-                <span className="text-white text-xs font-bold">
+        <div className="p-4 border-t border-white/10">
+          <div className="flex items-center space-x-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-all duration-300 group">
+            <div className="relative">
+              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                <span className="text-white text-sm font-bold">
                   {user?.name?.charAt(0) || 'A'}
                 </span>
               </div>
+              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 border-2 border-gray-800 rounded-full animate-pulse"></div>
             </div>
-            <div className={`transition-all duration-300 overflow-hidden ${
-              sidebarOpen ? 'opacity-100 flex-1 min-w-0' : 'lg:opacity-0 lg:group-hover:opacity-100 lg:w-0 lg:group-hover:w-auto lg:group-hover:flex-1 lg:group-hover:min-w-0'
-            }`}>
-              <div className="flex items-center justify-between w-full">
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-gray-800 truncate">
+            {sidebarOpen && (
+              <>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-white truncate">
                     {user?.name || 'Admin User'}
                   </p>
-                  <p className="text-xs text-gray-600 truncate">
+                  <p className="text-xs text-gray-400 truncate">
                     System Administrator
                   </p>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="p-1.5 rounded-lg text-gray-600 hover:text-red-500 hover:bg-red-100/50 transition-all duration-200 hover:scale-110 flex-shrink-0 ml-2"
+                  className="p-2 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200 hover:scale-110"
                   title="Logout"
                 >
-                  <LogOut className="w-3.5 h-3.5" />
+                  <LogOut className="w-4 h-4" />
                 </button>
-              </div>
-            </div>
-            {/* Tooltip for collapsed state */}
-            {!sidebarOpen && (
-              <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                {user?.name || 'Admin User'}
-              </div>
+              </>
             )}
           </div>
         </div>
@@ -727,10 +679,83 @@ export default function AdminDashboard() {
       )}
 
       {/* 🎯 Main Content Area */}
-      <div className={`transition-all duration-500 ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-14'}`}>
+      <div className={`transition-all duration-500 ${sidebarOpen ? 'lg:ml-80' : 'lg:ml-20'}`}>
         <main className={`relative z-0 ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+          {/* 🎨 Premium Header */}
+          <div className={`sticky top-0 z-30 backdrop-blur-md border-b ${
+            darkMode ? 'bg-gray-800/95 border-gray-700' : 'bg-white/95 border-gray-200'
+          }`} style={{
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)'
+          }}>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex justify-between items-center h-16">
+                <div className="flex items-center space-x-6 flex-1">
+                  <button
+                    onClick={handleSidebarToggle}
+                    className="p-2 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all duration-200 hover:scale-110"
+                  >
+                    <Menu className="w-6 h-6" />
+                  </button>
+                  
+                  {/* 🔍 Header Search - Only Search Icon */}
+                  <div className="flex-1 max-w-2xl">
+                    <button
+                      onClick={() => setShowSearchModal(true)}
+                      className={`w-full flex items-center px-5 py-3 rounded-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] ${
+                        darkMode 
+                          ? 'bg-gradient-to-r from-gray-800 to-gray-700 text-gray-300 hover:from-gray-700 hover:to-gray-600 shadow-xl hover:shadow-2xl' 
+                          : 'bg-gradient-to-r from-white to-gray-50 text-gray-600 hover:from-gray-50 hover:to-white shadow-xl hover:shadow-2xl border border-gray-200/50'
+                      }`}
+                      style={{
+                        boxShadow: darkMode 
+                          ? '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                          : '0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
+                      }}
+                    >
+                      <Search className="w-5 h-5 mr-4 transition-colors duration-200" />
+                      <span className="text-sm flex-1 text-left font-medium">Search...</span>
+                      <div className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 ${
+                        darkMode ? 'bg-gray-600/80 text-gray-200' : 'bg-gray-100/80 text-gray-700'
+                      }`}>
+                        ⌘K
+                      </div>
+                    </button>
+                  </div>
+                </div>
+                
+                {/* 🎯 Header Actions */}
+                <div className="flex items-center space-x-3">
+                  {/* Dark Mode Toggle */}
+                  <button
+                    onClick={handleDarkModeToggle}
+                    className={`p-2.5 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 ${
+                      darkMode 
+                        ? 'bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400' 
+                        : 'bg-gray-800/10 hover:bg-gray-800/20 text-gray-700'
+                    }`}
+                  >
+                    {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                  </button>
+                  
+                  {/* Notifications */}
+                  <button
+                    onClick={() => setNotificationOpen(!notificationOpen)}
+                    className={`relative p-2.5 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 ${
+                      darkMode 
+                        ? 'bg-blue-600/20 hover:bg-blue-600/30 text-blue-400' 
+                        : 'bg-blue-50 hover:bg-blue-100 text-blue-600'
+                    }`}
+                  >
+                    <Bell className="w-5 h-5" />
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* 🎯 Dashboard Content */}
-          <div className="pt-20 p-6">
+          <div className="p-6">
             {/* 🎨 Welcome Banner */}
             <div className={`relative overflow-hidden rounded-3xl p-8 mb-8 ${
               darkMode ? 'bg-gradient-to-r from-gray-800 to-gray-700' : 'bg-gradient-to-r from-white to-gray-50'
@@ -941,13 +966,6 @@ export default function AdminDashboard() {
             from { transform: rotate(360deg); }
             to { transform: rotate(0deg); }
           }
-        
-        /* Navigation bar adjustment for sidebar hover */
-        @media (min-width: 1024px) {
-          .sidebar-hover-active nav {
-            left: 256px !important;
-          }
-        }
         `
       }} />
     </div>
