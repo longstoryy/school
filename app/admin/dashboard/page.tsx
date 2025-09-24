@@ -50,7 +50,18 @@ interface SidebarItem {
   icon: any;
   href: string;
   active?: boolean;
+  submenu?: {
+    name: string;
+    icon: any;
+    href: string;
+    active?: boolean;
+  }[];
 }
+
+// Type guard functions
+const hasSubmenu = (item: SidebarItem): item is SidebarItem & { submenu: NonNullable<SidebarItem['submenu']> } => {
+  return item.submenu !== undefined && item.submenu.length > 0;
+};
 
 interface SidebarSection {
   title: string;
@@ -161,6 +172,7 @@ StatsCard.displayName = 'StatsCard';
 export default function AdminDashboard() {
   const [user, setUser] = useState<any>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarHovered, setSidebarHovered] = useState(false);
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
   const [darkMode, setDarkMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -401,7 +413,7 @@ export default function AdminDashboard() {
     }
   };
 
-  // Admin-Specific Sidebar Items Only
+  // Admin-Specific Sidebar Items with Dropdown Menus
   const sidebarItems = [
     {
       title: 'Dashboard',
@@ -413,8 +425,28 @@ export default function AdminDashboard() {
     {
       title: 'User Management',
       items: [
-        { name: 'Students', icon: GraduationCap, href: '/admin/students' },
-        { name: 'Teachers', icon: Users, href: '/admin/teachers' },
+        { 
+          name: 'Students', 
+          icon: GraduationCap, 
+          href: '/admin/students',
+          submenu: [
+            { name: 'All Students', icon: Users, href: '/admin/students' },
+            { name: 'Add Student', icon: UserPlus, href: '/admin/students/add' },
+            { name: 'Student Profiles', icon: User, href: '/admin/students/profiles' },
+            { name: 'Admissions', icon: ClipboardList, href: '/admin/students/admissions' },
+          ]
+        },
+        { 
+          name: 'Teachers', 
+          icon: Users, 
+          href: '/admin/teachers',
+          submenu: [
+            { name: 'All Teachers', icon: Users, href: '/admin/teachers' },
+            { name: 'Add Teacher', icon: UserPlus, href: '/admin/teachers/add' },
+            { name: 'Teacher Profiles', icon: User, href: '/admin/teachers/profiles' },
+            { name: 'Assignments', icon: ClipboardList, href: '/admin/teachers/assignments' },
+          ]
+        },
         { name: 'Parents', icon: Heart, href: '/admin/parents' },
         { name: 'Staff', icon: UserCheck, href: '/admin/staff' },
       ]
@@ -422,16 +454,46 @@ export default function AdminDashboard() {
     {
       title: 'Academic',
       items: [
-        { name: 'Classes', icon: Building, href: '/admin/classes' },
+        { 
+          name: 'Classes', 
+          icon: Building, 
+          href: '/admin/classes',
+          submenu: [
+            { name: 'All Classes', icon: Building, href: '/admin/classes' },
+            { name: 'Create Class', icon: Plus, href: '/admin/classes/create' },
+            { name: 'Class Schedules', icon: Calendar, href: '/admin/classes/schedules' },
+            { name: 'Room Management', icon: Home, href: '/admin/classes/rooms' },
+          ]
+        },
         { name: 'Subjects', icon: BookOpen, href: '/admin/subjects' },
-        { name: 'Examinations', icon: FileText, href: '/admin/exams' },
+        { 
+          name: 'Examinations', 
+          icon: FileText, 
+          href: '/admin/exams',
+          submenu: [
+            { name: 'All Exams', icon: FileText, href: '/admin/exams' },
+            { name: 'Create Exam', icon: Plus, href: '/admin/exams/create' },
+            { name: 'Exam Results', icon: Trophy, href: '/admin/exams/results' },
+            { name: 'Grade Reports', icon: BarChart3, href: '/admin/exams/grades' },
+          ]
+        },
         { name: 'Time Table', icon: Calendar, href: '/admin/timetable' },
       ]
     },
     {
       title: 'Finance',
       items: [
-        { name: 'Fee Collection', icon: DollarSign, href: '/admin/fees' },
+        { 
+          name: 'Fee Collection', 
+          icon: DollarSign, 
+          href: '/admin/fees',
+          submenu: [
+            { name: 'Collect Fees', icon: DollarSign, href: '/admin/fees' },
+            { name: 'Fee Structure', icon: FileText, href: '/admin/fees/structure' },
+            { name: 'Payment History', icon: Clock, href: '/admin/fees/history' },
+            { name: 'Outstanding Fees', icon: Bell, href: '/admin/fees/outstanding' },
+          ]
+        },
         { name: 'Expenses', icon: CreditCard, href: '/admin/expenses' },
         { name: 'Reports', icon: BarChart3, href: '/admin/finance-reports' },
       ]
@@ -455,7 +517,17 @@ export default function AdminDashboard() {
     {
       title: 'Settings',
       items: [
-        { name: 'System Settings', icon: Settings, href: '/admin/settings' },
+        { 
+          name: 'System Settings', 
+          icon: Settings, 
+          href: '/admin/settings',
+          submenu: [
+            { name: 'General Settings', icon: Settings, href: '/admin/settings' },
+            { name: 'School Profile', icon: Building, href: '/admin/settings/profile' },
+            { name: 'Academic Year', icon: Calendar, href: '/admin/settings/academic-year' },
+            { name: 'Notifications', icon: Bell, href: '/admin/settings/notifications' },
+          ]
+        },
         { name: 'User Roles', icon: Shield, href: '/admin/roles' },
         { name: 'Backup & Security', icon: Lock, href: '/admin/security' },
       ]
@@ -534,44 +606,73 @@ export default function AdminDashboard() {
         className={`fixed inset-y-0 left-0 z-30 transform transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] lg:translate-x-0 flex flex-col group ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } ${
-          sidebarOpen ? 'w-64' : 'lg:w-14 lg:hover:w-64'
+          sidebarOpen ? 'w-60' : 'lg:w-14 lg:hover:w-60'
         }`}
         onMouseEnter={() => {
           if (!sidebarOpen) {
+            setSidebarHovered(true);
             document.body.classList.add('sidebar-hover-active');
+            // Auto-move navbar
+            const navbar = document.querySelector('nav[style*="left"]') as HTMLElement;
+            if (navbar) {
+              navbar.style.left = '240px';
+            }
           }
         }}
         onMouseLeave={() => {
           if (!sidebarOpen) {
+            setSidebarHovered(false);
             document.body.classList.remove('sidebar-hover-active');
+            // Reset navbar position
+            const navbar = document.querySelector('nav[style*="left"]') as HTMLElement;
+            if (navbar) {
+              navbar.style.left = '56px';
+            }
           }
         }}
         style={{
-          background: 'linear-gradient(135deg, rgba(248, 250, 252, 0.98) 0%, rgba(241, 245, 249, 0.95) 50%, rgba(226, 232, 240, 0.92) 100%)',
+          background: darkMode 
+            ? 'linear-gradient(135deg, rgba(17, 24, 39, 0.98) 0%, rgba(31, 41, 55, 0.95) 50%, rgba(55, 65, 81, 0.92) 100%)'
+            : 'linear-gradient(135deg, rgba(248, 250, 252, 0.98) 0%, rgba(241, 245, 249, 0.95) 50%, rgba(226, 232, 240, 0.92) 100%)',
           backdropFilter: 'blur(24px)',
           WebkitBackdropFilter: 'blur(24px)',
-          borderRight: '1px solid rgba(148, 163, 184, 0.2)',
+          borderRight: darkMode ? '1px solid rgba(75, 85, 99, 0.3)' : '1px solid rgba(148, 163, 184, 0.2)',
           borderTop: '3px solid',
           borderImage: 'linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899, #f59e0b) 1',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
         }}
       >
         {/* 🎯 Sidebar Header */}
-        <div className="flex items-center justify-between p-4 border-b border-white/10">
+        <div className={`flex items-center justify-between p-4 border-b ${
+          darkMode ? 'border-gray-600/30' : 'border-white/10'
+        }`}>
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
               <Shield className="w-4 h-4 text-white" />
             </div>
-            {sidebarOpen && (
-              <div>
-                <h1 className="text-xl font-bold text-slate-800">Admin Panel</h1>
-                <p className="text-xs text-slate-600">Enterprise Dashboard</p>
-              </div>
-            )}
+            <div className={`transition-all duration-300 overflow-hidden ${
+              sidebarOpen || sidebarHovered ? 'opacity-100 max-w-none' : 'lg:opacity-0 lg:max-w-0'
+            }`}>
+              <h1 className={`text-xl font-bold whitespace-nowrap ${
+                darkMode ? 'text-gray-100' : 'text-slate-800'
+              }`}>Admin Panel</h1>
+              <p className={`text-xs whitespace-nowrap ${
+                darkMode ? 'text-gray-400' : 'text-slate-600'
+              }`}>Enterprise Dashboard</p>
+            </div>
+            
+            {/* Section Divider with Gradient */}
+            <div className={`mt-3 mb-2 h-px bg-gradient-to-r from-transparent via-current to-transparent opacity-30 ${
+              sidebarOpen || sidebarHovered ? 'block' : 'lg:hidden'
+            } ${darkMode ? 'text-gray-400' : 'text-slate-400'}`}></div>
           </div>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-all duration-200"
+            className={`lg:hidden p-2 rounded-lg transition-all duration-200 ${
+              darkMode 
+                ? 'text-gray-400 hover:text-white hover:bg-gray-700/30'
+                : 'text-gray-400 hover:text-slate-700 hover:bg-white/10'
+            }`}
           >
             <X className="w-5 h-5" />
           </button>
@@ -579,95 +680,275 @@ export default function AdminDashboard() {
 
         {/* 🔍 Premium Search Bar */}
         <div className={`transition-all duration-500 overflow-hidden ${
-          sidebarOpen ? 'p-4 opacity-100' : 'lg:p-0 lg:opacity-0 lg:group-hover:opacity-100 lg:group-hover:p-4'
+          sidebarOpen || sidebarHovered ? 'p-4 opacity-100' : 'lg:p-2 lg:opacity-0'
         }`}>
           <button
             onClick={() => setShowSearchModal(true)}
-            className="w-full flex items-center px-4 py-3 rounded-xl bg-white/30 border border-slate-200/40 text-slate-700 hover:bg-white/50 hover:border-slate-300/50 transition-all duration-500 group shadow-sm"
+            className={`w-full flex items-center px-4 py-3 rounded-xl border transition-all duration-500 group shadow-sm ${
+              darkMode 
+                ? 'bg-gray-700/30 border-gray-600/40 text-gray-300 hover:bg-gray-600/40 hover:border-gray-500/50'
+                : 'bg-white/30 border-slate-200/40 text-slate-700 hover:bg-white/50 hover:border-slate-300/50'
+            }`}
           >
-            <Search className="w-4 h-4 mr-3 group-hover:text-gray-900 transition-colors" />
-            <span className={`text-sm font-medium transition-all duration-500 whitespace-nowrap ${
-              sidebarOpen ? 'opacity-100 w-auto' : 'lg:opacity-0 lg:w-0 lg:group-hover:opacity-100 lg:group-hover:w-auto'
+            <Search className={`w-4 h-4 mr-3 transition-colors ${
+              darkMode ? 'group-hover:text-gray-100' : 'group-hover:text-gray-900'
+            }`} />
+            <span className={`text-sm font-medium transition-all duration-500 whitespace-nowrap overflow-hidden ${
+              sidebarOpen || sidebarHovered ? 'opacity-100 w-auto ml-3' : 'lg:opacity-0 lg:w-0 lg:ml-0'
             }`}>Search...</span>
-            <div className={`ml-auto px-2 py-1 rounded-md bg-gray-100/60 text-xs font-medium text-gray-600 transition-all duration-500 ${
-              sidebarOpen ? 'opacity-100' : 'lg:opacity-0 lg:group-hover:opacity-100'
+            <div className={`px-2 py-1 rounded-md text-xs font-medium transition-all duration-500 overflow-hidden ${
+              darkMode ? 'bg-gray-600/60 text-gray-300' : 'bg-gray-100/60 text-gray-600'
+            } ${
+              sidebarOpen || sidebarHovered ? 'opacity-100 ml-auto' : 'lg:opacity-0 lg:w-0 lg:ml-0'
             }`}>⌘K</div>
           </button>
         </div>
 
         {/* 🎨 Premium Navigation */}
-        <nav className="flex-1 overflow-y-auto px-4 py-2 vuexy-scrollbar">
-          <div className="space-y-1">
+        <nav className="flex-1 overflow-y-auto px-2 py-2 vuexy-scrollbar">
+          {/* Collapsed State - Icon Representatives */}
+          {!sidebarOpen && !sidebarHovered && (
+            <div className="hidden lg:flex flex-col space-y-2 px-1">
+              {sidebarItems.map((section, sectionIndex) => (
+                <div key={`collapsed-${sectionIndex}`} className="space-y-2">
+                  {/* Section Divider */}
+                  {sectionIndex > 0 && (
+                    <div className={`mx-2 my-3 h-px bg-gradient-to-r from-transparent via-current to-transparent opacity-40 ${
+                      darkMode ? 'text-blue-400' : 'text-blue-500'
+                    }`}></div>
+                  )}
+                  {section.items.map((item, itemIndex) => (
+                    <div key={`collapsed-item-${itemIndex}`} className="relative group">
+                      <button
+                        className={`icon-representative w-full p-3 rounded-xl transition-all duration-300 flex items-center justify-center group/icon relative overflow-hidden border-2 ${
+                          (item as any).active
+                            ? darkMode
+                              ? 'bg-gradient-to-br from-blue-500/30 to-purple-600/30 border-blue-400/50 text-blue-300 shadow-xl'
+                              : 'bg-gradient-to-br from-blue-500/20 to-purple-600/20 border-blue-400/60 text-blue-700 shadow-xl'
+                            : darkMode
+                              ? 'border-gray-600/30 text-gray-300 hover:text-white hover:bg-gradient-to-br hover:from-gray-700/40 hover:to-gray-600/40 hover:border-gray-500/50 hover:shadow-lg'
+                              : 'border-gray-300/40 text-slate-600 hover:text-slate-800 hover:bg-gradient-to-br hover:from-white/60 hover:to-gray-50/60 hover:border-gray-400/60 hover:shadow-lg'
+                        }`}
+                        title={item.name}
+                      >
+                        {/* Gradient Border Animation */}
+                        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 opacity-0 group-hover/icon:opacity-100 transition-opacity duration-300"></div>
+                        
+                        <item.icon className="w-5 h-5 transition-all duration-300 group-hover/icon:scale-125 relative z-10 drop-shadow-sm" />
+                        
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {/* Expanded State - Full Menu */}
+          <div className={`space-y-1 px-2 ${
+            sidebarOpen || sidebarHovered ? 'block' : 'lg:hidden'
+          }`}>
             {sidebarItems.map((section, sectionIndex) => (
               <div key={sectionIndex} className="space-y-1">
-                {/* 🏷️ Section Header */}
-                <div className={`px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500/90 transition-all duration-500 overflow-hidden ${
-                  sidebarOpen ? 'opacity-100 h-auto' : 'lg:opacity-0 lg:h-0 lg:group-hover:opacity-100 lg:group-hover:h-auto'
-                }`}>
-                  {section.title}
-                </div>
+                {/* 🏷️ Collapsible Section Header */}
+                <button
+                  onClick={() => toggleSection(section.title)}
+                  className={`w-full flex items-center justify-between px-3 py-2 text-xs font-semibold uppercase tracking-wider transition-all duration-300 rounded-lg group/section ${
+                    darkMode
+                      ? 'text-gray-400/90 hover:text-gray-200 hover:bg-gray-700/30'
+                      : 'text-slate-500/90 hover:text-slate-700 hover:bg-white/30'
+                  }`}
+                >
+                  <span className="transition-all duration-300 overflow-hidden whitespace-nowrap">{section.title}</span>
+                  <ChevronRight className={`w-3 h-3 transition-all duration-300 flex-shrink-0 ${
+                    expandedSections[section.title] ? 'rotate-90' : ''
+                  }`} />
+                </button>
                 
                 {/* 🎯 Menu Items */}
-                {section.items.map((item, itemIndex) => (
-                  <div key={itemIndex} className="relative group">
-                    <a
-                      href={item.href}
-                      className={`premium-menu-item flex items-center px-3 py-3 rounded-xl transition-all duration-300 relative overflow-hidden group ${
-                        item.active
-                          ? 'bg-gradient-to-r from-blue-500/15 to-purple-500/15 text-gray-800 border border-blue-400/30 shadow-md'
-                          : 'text-gray-700 hover:text-gray-900 hover:bg-white/30'
-                      } ${sidebarOpen ? 'space-x-3' : 'justify-center'}`}
-                      style={{
-                        backdropFilter: item.active ? 'blur(15px)' : 'none'
-                      }}
-                    >
-                      {/* 🌈 Animated Border Gradient */}
-                      <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                        style={{
-                          background: 'conic-gradient(from 0deg, #667eea, #764ba2, #f093fb, #f5576c, #667eea)',
-                          padding: '1px'
-                        }}
-                      >
-                        <div className="w-full h-full rounded-xl bg-gradient-to-r from-white/80 to-yellow-50/60"></div>
-                      </div>
-                      
-                      {/* 🎯 Icon */}
-                      <div className="relative z-10 flex-shrink-0">
-                        <item.icon className={`w-4 h-4 transition-all duration-300 group-hover:scale-110 ${
-                          item.active ? 'text-blue-600' : 'text-gray-600 group-hover:text-gray-900'
-                        }`} />
-                      </div>
-                      
-                      {/* 📝 Label */}
-                      <span className={`relative z-10 text-sm font-medium transition-all duration-300 overflow-hidden ${
-                        sidebarOpen 
-                          ? 'opacity-100 w-auto' 
-                          : 'lg:opacity-0 lg:group-hover:opacity-100 lg:w-0 lg:group-hover:w-auto'
-                      } ${
-                        item.active ? 'text-gray-800' : 'group-hover:text-gray-900'
-                      }`}>
-                        {item.name}
-                      </span>
-                      
-                      {/* 💬 Tooltip for collapsed sidebar */}
-                      {!sidebarOpen && (
-                        <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                          {item.name}
+                <div className={`overflow-hidden transition-all duration-300 ${
+                  expandedSections[section.title] ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                }`}>
+                  {section.items.map((item, itemIndex) => (
+                    <div key={itemIndex} className="relative group ml-4 mb-1">
+                      {hasSubmenu(item) ? (
+                        <div className="relative">
+                          <button
+                            onClick={() => toggleSubmenu(item.name)}
+                            className={`premium-menu-item w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all duration-300 relative overflow-hidden group hover:translate-x-1 ${
+                              (item as any).active
+                                ? darkMode
+                                  ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-white border border-blue-400/40 shadow-md'
+                                  : 'bg-gradient-to-r from-blue-500/15 to-purple-500/15 text-slate-800 border border-blue-400/30 shadow-md'
+                                : darkMode
+                                  ? 'text-gray-300 hover:text-white hover:bg-gray-700/40'
+                                  : 'text-slate-600 hover:text-slate-800 hover:bg-white/40'
+                            } ${sidebarOpen || sidebarHovered ? 'space-x-3' : 'justify-center'}`}
+                            style={{
+                              backdropFilter: (item as any).active ? 'blur(15px)' : 'none'
+                            }}
+                          >
+                            {/* 🌈 Animated Border Gradient */}
+                            <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                              style={{
+                                background: 'linear-gradient(90deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1))',
+                              }}
+                            ></div>
+                            
+                            <div className="flex items-center relative z-10 w-full">
+                              {/* 🎯 Icon - Always Visible */}
+                              <div className="flex-shrink-0 w-4 h-4 flex items-center justify-center">
+                                <item.icon className={`w-4 h-4 transition-all duration-300 group-hover:scale-110 ${
+                                  (item as any).active
+                                    ? darkMode ? 'text-blue-400' : 'text-blue-600'
+                                    : darkMode 
+                                      ? 'text-gray-300 group-hover:text-white' 
+                                      : 'text-slate-600 group-hover:text-slate-800'
+                                }`} />
+                              </div>
+                              
+                              {/* 📝 Label */}
+                              <span className={`text-sm font-medium transition-all duration-300 overflow-hidden whitespace-nowrap ${
+                                sidebarOpen || sidebarHovered
+                                  ? 'opacity-100 w-auto ml-3' 
+                                  : 'lg:opacity-0 lg:w-0 lg:ml-0'
+                              } ${
+                                (item as any).active
+                                  ? darkMode ? 'text-white' : 'text-slate-800'
+                                  : darkMode 
+                                    ? 'text-gray-300 group-hover:text-white' 
+                                    : 'text-slate-600 group-hover:text-slate-800'
+                              }`}>
+                                {item.name}
+                              </span>
+                            </div>
+                            
+                            {/* Dropdown Arrow */}
+                            <ChevronRight className={`w-3 h-3 transition-all duration-300 relative z-10 ${
+                              activeSubmenu === item.name ? 'rotate-90' : ''
+                            } ${
+                              sidebarOpen || sidebarHovered ? 'opacity-100' : 'lg:opacity-0'
+                            }`} />
+                            
+                            {/* 💬 Tooltip for collapsed sidebar */}
+                            {!sidebarOpen && !sidebarHovered && (
+                              <div className={`absolute left-full ml-2 px-2 py-1 text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 ${
+                                darkMode 
+                                  ? 'bg-gray-700 text-gray-100 border border-gray-600' 
+                                  : 'bg-slate-800 text-white'
+                              }`}>
+                                {item.name}
+                              </div>
+                            )}
+                            
+                          </button>
+                          
+                          {/* Submenu Items */}
+                          <div className={`overflow-hidden transition-all duration-300 ml-4 ${
+                            activeSubmenu === item.name ? 'max-h-96 opacity-100 mt-1' : 'max-h-0 opacity-0'
+                          }`}>
+                            {item.submenu.map((subItem: any, subIndex: number) => (
+                              <a
+                                key={subIndex}
+                                href={subItem.href}
+                                className={`flex items-center px-3 py-2 rounded-lg transition-all duration-300 text-sm ${
+                                  subItem.active
+                                    ? darkMode
+                                      ? 'bg-gradient-to-r from-purple-500/15 to-blue-500/15 text-white border-l-2 border-blue-400'
+                                      : 'bg-gradient-to-r from-purple-500/10 to-blue-500/10 text-slate-800 border-l-2 border-blue-500'
+                                    : darkMode
+                                      ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30 border-l-2 border-transparent hover:border-gray-500'
+                                      : 'text-slate-500 hover:text-slate-700 hover:bg-white/30 border-l-2 border-transparent hover:border-slate-300'
+                                } ${sidebarOpen || sidebarHovered ? 'space-x-2' : 'justify-center'}`}
+                              >
+                                <subItem.icon className={`w-3 h-3 flex-shrink-0 ${
+                                  subItem.active
+                                    ? darkMode ? 'text-blue-400' : 'text-blue-600'
+                                    : darkMode ? 'text-gray-400' : 'text-slate-500'
+                                }`} />
+                                <span className={`transition-all duration-300 ${
+                                  sidebarOpen || sidebarHovered ? 'opacity-100' : 'lg:opacity-0 lg:w-0'
+                                }`}>
+                                  {subItem.name}
+                                </span>
+                              </a>
+                            ))}
+                          </div>
                         </div>
+                      ) : (
+                        <a
+                          href={item.href}
+                          className={`premium-menu-item flex items-center px-3 py-2.5 rounded-lg transition-all duration-300 relative overflow-hidden group hover:translate-x-1 ${
+                            (item as any).active
+                              ? darkMode
+                                ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-white border border-blue-400/40 shadow-md'
+                                : 'bg-gradient-to-r from-blue-500/15 to-purple-500/15 text-slate-800 border border-blue-400/30 shadow-md'
+                              : darkMode
+                                ? 'text-gray-300 hover:text-white hover:bg-gray-700/40'
+                                : 'text-slate-600 hover:text-slate-800 hover:bg-white/40'
+                          } ${sidebarOpen || sidebarHovered ? 'space-x-3' : 'justify-center'}`}
+                          style={{
+                            backdropFilter: (item as any).active ? 'blur(15px)' : 'none'
+                          }}
+                        >
+                        {/* 🌈 Animated Border Gradient */}
+                        <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                          style={{
+                            background: 'linear-gradient(90deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1))',
+                          }}
+                        ></div>
+                        
+                        <div className="flex items-center relative z-10 w-full">
+                          {/* 🎯 Icon - Always Visible */}
+                          <div className="flex-shrink-0 w-4 h-4 flex items-center justify-center">
+                            <item.icon className={`w-4 h-4 transition-all duration-300 group-hover:scale-110 ${
+                              (item as any).active
+                                ? darkMode ? 'text-blue-400' : 'text-blue-600'
+                                : darkMode 
+                                  ? 'text-gray-300 group-hover:text-white' 
+                                  : 'text-slate-600 group-hover:text-slate-800'
+                            }`} />
+                          </div>
+                          
+                          {/* 📝 Label */}
+                          <span className={`text-sm font-medium transition-all duration-300 overflow-hidden whitespace-nowrap ${
+                            sidebarOpen || sidebarHovered
+                              ? 'opacity-100 w-auto ml-3' 
+                              : 'lg:opacity-0 lg:w-0 lg:ml-0'
+                          } ${
+                            (item as any).active
+                              ? darkMode ? 'text-white' : 'text-slate-800'
+                              : darkMode 
+                                ? 'text-gray-300 group-hover:text-white' 
+                                : 'text-slate-600 group-hover:text-slate-800'
+                          }`}>
+                            {item.name}
+                          </span>
+                        </div>
+                          
+                          {/* 💬 Tooltip for collapsed sidebar */}
+                          {!sidebarOpen && !sidebarHovered && (
+                            <div className={`absolute left-full ml-2 px-2 py-1 text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 ${
+                              darkMode 
+                                ? 'bg-gray-700 text-gray-100 border border-gray-600' 
+                                : 'bg-slate-800 text-white'
+                            }`}>
+                              {item.name}
+                            </div>
+                          )}
+                          
+                        </a>
                       )}
-                      
-                      {/* ✨ Active Indicator */}
-                      {item.active && (
-                        <div className="absolute right-2 w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                      )}
-                    </a>
-                  </div>
-                ))}
-                
+                    </div>
+                  ))}
+                </div>
+                  
                 {/* 📏 Section Divider */}
                 {sectionIndex < sidebarItems.length - 1 && (
-                  <div className={`mx-3 my-4 border-t border-white/10 transition-all duration-500 ${
-                    sidebarOpen ? 'opacity-100' : 'lg:opacity-0 lg:group-hover:opacity-100'
+                  <div className={`mx-3 my-4 border-t transition-all duration-500 ${
+                    darkMode ? 'border-gray-600/30' : 'border-white/10'
+                  } ${
+                    sidebarOpen || sidebarHovered ? 'opacity-100' : 'lg:opacity-0'
                   }`}></div>
                 )}
               </div>
@@ -676,9 +957,15 @@ export default function AdminDashboard() {
         </nav>
 
         {/* 👤 Premium User Profile */}
-        <div className="p-3 border-t border-gray-200/20">
-          <div className={`flex items-center rounded-xl bg-white/20 hover:bg-white/40 transition-all duration-300 group shadow-sm ${
-            sidebarOpen || (!sidebarOpen && 'group-hover:w-64') ? 'p-3 space-x-3' : 'p-2 justify-center'
+        <div className={`p-3 border-t ${
+          darkMode ? 'border-gray-600/30' : 'border-gray-200/20'
+        }`}>
+          <div className={`flex items-center rounded-xl transition-all duration-300 group shadow-sm ${
+            darkMode 
+              ? 'bg-gray-700/30 hover:bg-gray-600/40' 
+              : 'bg-white/20 hover:bg-white/40'
+          } ${
+            sidebarOpen || sidebarHovered ? 'p-3 space-x-3' : 'p-2 justify-center'
           }`}>
             <div className="relative flex-shrink-0">
               <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
@@ -688,20 +975,28 @@ export default function AdminDashboard() {
               </div>
             </div>
             <div className={`transition-all duration-300 overflow-hidden ${
-              sidebarOpen ? 'opacity-100 flex-1 min-w-0' : 'lg:opacity-0 lg:group-hover:opacity-100 lg:w-0 lg:group-hover:w-auto lg:group-hover:flex-1 lg:group-hover:min-w-0'
+              sidebarOpen || sidebarHovered ? 'opacity-100 flex-1 min-w-0' : 'lg:opacity-0 lg:w-0'
             }`}>
               <div className="flex items-center justify-between w-full">
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-gray-800 truncate">
+                  <p className={`text-sm font-semibold truncate ${
+                    darkMode ? 'text-gray-100' : 'text-gray-800'
+                  }`}>
                     {user?.name || 'Admin User'}
                   </p>
-                  <p className="text-xs text-gray-600 truncate">
+                  <p className={`text-xs truncate ${
+                    darkMode ? 'text-gray-400' : 'text-gray-600'
+                  }`}>
                     System Administrator
                   </p>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="p-1.5 rounded-lg text-gray-600 hover:text-red-500 hover:bg-red-100/50 transition-all duration-200 hover:scale-110 flex-shrink-0 ml-2"
+                  className={`p-1.5 rounded-lg transition-all duration-200 hover:scale-110 flex-shrink-0 ml-2 ${
+                    darkMode 
+                      ? 'bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300'
+                      : 'bg-red-500/10 hover:bg-red-500/20 text-red-600 hover:text-red-700'
+                  }`}
                   title="Logout"
                 >
                   <LogOut className="w-3.5 h-3.5" />
@@ -727,10 +1022,10 @@ export default function AdminDashboard() {
       )}
 
       {/* 🎯 Main Content Area */}
-      <div className={`transition-all duration-500 ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-14'}`}>
+      <div className={`transition-all duration-500 ${sidebarOpen || sidebarHovered ? 'lg:ml-60' : 'lg:ml-14'}`}>
         <main className={`relative z-0 ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
           {/* 🎯 Dashboard Content */}
-          <div className="pt-20 p-6">
+          <div className="pt-20 p-4 sm:p-6">
             {/* 🎨 Welcome Banner */}
             <div className={`relative overflow-hidden rounded-3xl p-8 mb-8 ${
               darkMode ? 'bg-gradient-to-r from-gray-800 to-gray-700' : 'bg-gradient-to-r from-white to-gray-50'
@@ -751,7 +1046,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="hidden lg:block">
                     <div className="w-32 h-32 bg-gradient-to-r from-blue-500/20 to-purple-600/20 backdrop-blur-sm rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                      <div className="text-6xl">🏫</div>
+                      <div className="text-6xl">🏦</div>
                     </div>
                   </div>
                 </div>
@@ -759,7 +1054,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* 🚀 Premium Enterprise Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
               <StatsCard
                 title="Total Students"
                 value={dashboardStats.totalStudents}
@@ -821,20 +1116,22 @@ export default function AdminDashboard() {
           }}>
             <div className="p-6">
               <div className="flex items-center space-x-4 mb-6">
-                <Search className="w-6 h-6 text-gray-400" />
+                <Search className={`w-6 h-6 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`} />
                 <input
                   type="text"
-                  placeholder="Search anything..."
-                  className={`flex-1 text-lg bg-transparent border-none outline-none ${
-                    darkMode ? 'text-white placeholder-gray-400' : 'text-gray-900 placeholder-gray-500'
-                  }`}
+                  placeholder="Search students, teachers, classes, reports..."
                   value={searchQuery}
                   onChange={(e) => handleSearch(e.target.value)}
+                  className={`flex-1 bg-transparent text-lg font-medium placeholder-gray-500 focus:outline-none ${
+                    darkMode ? 'text-white' : 'text-gray-900'
+                  }`}
                   autoFocus
                 />
                 <button
                   onClick={() => setShowSearchModal(false)}
-                  className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all duration-200"
+                  className={`p-2 rounded-lg transition-colors ${
+                    darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
+                  }`}
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -842,11 +1139,10 @@ export default function AdminDashboard() {
               
               {searchResults.length > 0 && (
                 <div className="space-y-2">
-                  {searchResults.map((result, index) => (
-                    <a
+                  {searchResults.map((result: any, index: number) => (
+                    <div
                       key={index}
-                      href={result.path}
-                      className={`block p-4 rounded-xl transition-all duration-200 hover:scale-[1.02] ${
+                      className={`p-3 rounded-lg cursor-pointer transition-colors ${
                         darkMode ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'
                       }`}
                     >
@@ -857,19 +1153,26 @@ export default function AdminDashboard() {
                           result.type === 'reports' ? 'bg-purple-500/20 text-purple-400' :
                           'bg-gray-500/20 text-gray-400'
                         }`}>
-                          <FileText className="w-5 h-5" />
+                          <Search className="w-5 h-5" />
                         </div>
-                        <div>
-                          <h3 className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        <div className="flex-1">
+                          <div className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                             {result.title}
-                          </h3>
-                          <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                            {result.type}
-                          </p>
+                          </div>
+                          <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                            {result.path}
+                          </div>
                         </div>
                       </div>
-                    </a>
+                    </div>
                   ))}
+                </div>
+              )}
+              
+              {searchQuery && searchResults.length === 0 && (
+                <div className="text-center py-8">
+                  <Search className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                  <p className="text-sm text-gray-400">No results found</p>
                 </div>
               )}
             </div>
@@ -877,79 +1180,115 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* 🎨 Premium Enterprise Styles */}
-      <style dangerouslySetInnerHTML={{
-        __html: `
-          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-          
-          * {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-          }
-          
-          /* 🌟 Premium Menu Animations */
-          .premium-menu-item {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            transform-origin: left center;
-          }
-          
-          .premium-menu-item:hover {
-            transform: translateX(4px) scale(1.02);
-          }
-          
-          /* 🎯 Custom Scrollbars */
-          .vuexy-scrollbar::-webkit-scrollbar {
-            width: 4px;
-          }
-          
-          .vuexy-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-          }
-          
-          .vuexy-scrollbar::-webkit-scrollbar-thumb {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            border-radius: 4px;
-            transition: all 0.3s ease;
-          }
-          
-          .vuexy-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(45deg, #f093fb, #f5576c);
-            transform: scaleY(1.2);
-          }
-          
-          /* ✨ Premium Animations */
-          .animate-fadeIn {
-            animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-          }
-          
-          .animate-reverse-spin {
-            animation: reverse-spin 2s linear infinite;
-          }
-          
-          /* 🎭 Keyframes */
-          @keyframes fadeIn {
-            from { 
-              opacity: 0; 
-              transform: translateY(20px) scale(0.95); 
-            }
-            to { 
-              opacity: 1; 
-              transform: translateY(0) scale(1); 
-            }
-          }
-          
-          @keyframes reverse-spin {
-            from { transform: rotate(360deg); }
-            to { transform: rotate(0deg); }
-          }
+      {/* 🎨 Custom Styles */}
+      <style jsx>{`
+        .vuexy-scrollbar {
+          scrollbar-width: thin;
+          scrollbar-color: #8b5cf6 transparent;
+        }
         
-        /* Navigation bar adjustment for sidebar hover */
-        @media (min-width: 1024px) {
-          .sidebar-hover-active nav {
-            left: 256px !important;
+        .vuexy-scrollbar::-webkit-scrollbar {
+          width: 3px;
+        }
+        
+        .vuexy-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        
+        .vuexy-scrollbar::-webkit-scrollbar-thumb {
+          background: linear-gradient(135deg, #8b5cf6, #ec4899);
+          border-radius: 10px;
+        }
+        
+        .vuexy-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(135deg, #7c3aed, #db2777);
+        }
+        
+        .premium-menu-item {
+          position: relative;
+          overflow: hidden;
+        }
+        
+        .premium-menu-item::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+          transition: left 0.5s;
+        }
+        
+        .premium-menu-item:hover::before {
+          left: 100%;
+        }
+        
+        /* Enhanced Icon Representative Animations */
+        .icon-representative {
+          transform: translateY(0) scale(1);
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+        }
+        
+        .icon-representative:hover {
+          transform: translateY(-4px) scale(1.1);
+          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .icon-representative:active {
+          transform: translateY(-2px) scale(1.05);
+        }
+        
+        /* Gradient border pulse animation */
+        @keyframes gradientPulse {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 0.8; }
+        }
+        
+        .icon-representative.active {
+          animation: gradientPulse 2s ease-in-out infinite;
+        }
+        
+        /* Popup Menu Animations */
+        .popup-menu {
+          animation: slideInFromLeft 0.3s ease-out;
+        }
+        
+        @keyframes slideInFromLeft {
+          from {
+            opacity: 0;
+            transform: translateX(-10px) scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0) scale(1);
           }
         }
-        `
-      }} />
+        
+        @keyframes fadeInUp {
+          from { 
+            opacity: 0; 
+            transform: translateY(20px) scale(0.95); 
+          }
+          to { 
+            opacity: 1; 
+            transform: translateY(0) scale(1); 
+          }
+        }
+        
+        @keyframes reverse-spin {
+          from { transform: rotate(360deg); }
+          to { transform: rotate(0deg); }
+        }
+        
+      /* Navigation bar adjustment for sidebar hover */
+      @media (min-width: 1024px) {
+        .sidebar-hover-active nav {
+          left: 256px !important;
+        }
+      }
+      `}</style>
     </div>
   );
 }

@@ -244,7 +244,7 @@ export default function GlassMorphismNavigation({
       <nav className={`fixed top-0 z-50 transition-all duration-500 ease-out ${
       isScrolled ? 'backdrop-blur-xl' : 'backdrop-blur-md'
     }`} style={{
-        left: sidebarOpen ? '256px' : '56px',
+        left: sidebarOpen ? '240px' : '56px',
         right: '0',
         background: darkMode 
           ? `linear-gradient(135deg, rgba(17, 24, 39, 0.8) 0%, rgba(31, 41, 55, 0.9) 100%)`
@@ -258,17 +258,34 @@ export default function GlassMorphismNavigation({
             
             {/* 🏠 Logo & Brand */}
             <div className="flex items-center space-x-3">
-              {/* Sidebar Toggle */}
+              {/* Professional Hamburger Menu */}
               {onSidebarToggle && (
                 <button
                   onClick={onSidebarToggle}
-                  className={`p-2 rounded-lg backdrop-blur-sm border transition-all duration-300 lg:block ${
+                  className={`group relative p-3 rounded-xl backdrop-blur-sm border transition-all duration-300 hover:scale-105 ${
                     darkMode 
-                      ? 'bg-white/10 border-white/20 hover:bg-white/20 text-white' 
-                      : 'bg-gray-900/80 border-gray-700/50 hover:bg-gray-900/90 text-white shadow-lg'
+                      ? 'bg-gradient-to-r from-gray-800/80 to-gray-700/80 border-gray-600/40 hover:from-gray-700/90 hover:to-gray-600/90 shadow-xl' 
+                      : 'bg-gradient-to-r from-white/90 to-gray-50/90 border-gray-200/60 hover:from-white hover:to-gray-100 shadow-xl'
                   }`}
+                  title="Toggle Sidebar"
                 >
-                  <Menu className="w-4 h-4" />
+                  <div className="relative">
+                    <div className={`flex flex-col space-y-1 transition-all duration-300 ${
+                      sidebarOpen ? 'rotate-45' : 'rotate-0'
+                    }`}>
+                      <div className={`w-4 h-0.5 rounded-full transition-all duration-300 ${
+                        darkMode ? 'bg-gray-300 group-hover:bg-white' : 'bg-gray-600 group-hover:bg-gray-800'
+                      } ${sidebarOpen ? 'rotate-90 translate-y-1.5' : ''}`}></div>
+                      <div className={`w-4 h-0.5 rounded-full transition-all duration-300 ${
+                        darkMode ? 'bg-gray-300 group-hover:bg-white' : 'bg-gray-600 group-hover:bg-gray-800'
+                      } ${sidebarOpen ? 'opacity-0' : 'opacity-100'}`}></div>
+                      <div className={`w-4 h-0.5 rounded-full transition-all duration-300 ${
+                        darkMode ? 'bg-gray-300 group-hover:bg-white' : 'bg-gray-600 group-hover:bg-gray-800'
+                      } ${sidebarOpen ? '-rotate-90 -translate-y-1.5' : ''}`}></div>
+                    </div>
+                  </div>
+                  {/* Hover effect */}
+                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </button>
               )}
             </div>
