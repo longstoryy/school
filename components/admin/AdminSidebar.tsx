@@ -168,19 +168,19 @@ export default function AdminSidebar({
                   <div key={`collapsed-item-${itemIndex}`} className="relative group">
                     <Link
                       href={item.href}
-                      className={`icon-representative w-full p-2 rounded-lg transition-all duration-300 flex items-center justify-center group/icon relative overflow-hidden ${
+                      className={`icon-representative w-full p-2 rounded-xl transition-all duration-300 flex items-center justify-center group/icon relative overflow-hidden border ${
                         isItemActive(item) || hasActiveSubmenu(item)
                           ? darkMode
-                            ? 'bg-gradient-to-br from-blue-500/30 to-purple-600/30 text-blue-300 shadow-xl'
-                            : 'bg-gradient-to-br from-blue-500/20 to-purple-600/20 text-blue-700 shadow-xl'
+                            ? 'bg-gradient-to-br from-blue-500/30 to-purple-600/30 text-blue-300 shadow-xl border-blue-400/60'
+                            : 'bg-gradient-to-br from-blue-500/20 to-purple-600/20 text-blue-700 shadow-xl border-blue-400/60'
                           : darkMode
-                            ? 'text-gray-300 hover:text-white hover:bg-gradient-to-br hover:from-gray-700/40 hover:to-gray-600/40 hover:shadow-lg'
-                            : 'text-slate-600 hover:text-slate-800 hover:bg-gradient-to-br hover:from-white/60 hover:to-gray-50/60 hover:shadow-lg'
+                            ? 'text-gray-300 hover:text-white hover:bg-gradient-to-br hover:from-gray-700/40 hover:to-gray-600/40 hover:shadow-lg border-transparent hover:border-gray-500/50'
+                            : 'text-slate-600 hover:text-slate-800 hover:bg-gradient-to-br hover:from-white/60 hover:to-gray-50/60 hover:shadow-lg border-transparent hover:border-gray-400/60'
                       }`}
                       title={item.name}
                     >
                       {/* Gradient Border Animation */}
-                      <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 opacity-0 group-hover/icon:opacity-100 transition-opacity duration-300"></div>
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 opacity-0 group-hover/icon:opacity-100 transition-opacity duration-300"></div>
                       
                       <item.icon className="w-5 h-5 transition-all duration-300 group-hover/icon:scale-125 relative z-10 drop-shadow-sm" />
                     </Link>
@@ -200,14 +200,20 @@ export default function AdminSidebar({
               {/* 🏷️ Collapsible Section Header */}
               <button
                 onClick={() => toggleSection(section.title)}
-                className={`w-full flex items-center justify-between px-3 py-2 text-xs font-semibold uppercase tracking-wider transition-all duration-300 rounded-lg group/section ${
+                className={`w-full flex items-center justify-between px-3 py-2 text-xs font-semibold uppercase tracking-wider transition-all duration-300 rounded-lg group/section relative overflow-hidden ${
                   darkMode
                     ? 'text-gray-400/90 hover:text-gray-200 hover:bg-gray-700/30'
                     : 'text-slate-500/90 hover:text-slate-700 hover:bg-white/30'
                 }`}
               >
-                <span>{section.title}</span>
-                <ChevronRight className={`w-3 h-3 transition-transform duration-300 ${
+                {/* Section header gradient effect */}
+                <div className="absolute inset-0 rounded-lg opacity-0 group-hover/section:opacity-100 transition-opacity duration-300"
+                  style={{
+                    background: 'linear-gradient(90deg, rgba(59, 130, 246, 0.03), rgba(139, 92, 246, 0.03))',
+                  }}
+                ></div>
+                <span className="relative z-10 transition-all duration-300 overflow-hidden whitespace-nowrap">{section.title}</span>
+                <ChevronRight className={`w-3 h-3 transition-all duration-300 flex-shrink-0 relative z-10 ${
                   expandedSections[section.title] ? 'rotate-90' : ''
                 }`} />
               </button>
@@ -221,11 +227,11 @@ export default function AdminSidebar({
                       <div className="flex items-center">
                         <Link
                           href={item.href}
-                          className={`premium-menu-item flex items-center flex-1 px-3 py-2.5 rounded-lg transition-all duration-300 group/item relative overflow-hidden ${
+                          className={`premium-menu-item flex items-center flex-1 px-3 py-2.5 rounded-lg transition-all duration-300 group/item relative overflow-hidden hover:translate-x-1 ${
                             isItemActive(item) || hasActiveSubmenu(item)
                               ? darkMode
-                                ? 'bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-blue-300 shadow-lg'
-                                : 'bg-gradient-to-r from-blue-500/10 to-purple-600/10 text-blue-700 shadow-lg'
+                                ? 'bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-blue-300 shadow-lg border border-blue-400/40'
+                                : 'bg-gradient-to-r from-blue-500/10 to-purple-600/10 text-blue-700 shadow-lg border border-blue-400/30'
                               : darkMode
                                 ? 'text-gray-300 hover:text-white hover:bg-gray-700/40'
                                 : 'text-slate-600 hover:text-slate-800 hover:bg-white/40'
@@ -234,6 +240,12 @@ export default function AdminSidebar({
                             backdropFilter: (isItemActive(item) || hasActiveSubmenu(item)) ? 'blur(15px)' : 'none'
                           }}
                         >
+                          {/* 🌈 Animated Border Gradient */}
+                          <div className="absolute inset-0 rounded-lg opacity-0 group-hover/item:opacity-100 transition-opacity duration-500"
+                            style={{
+                              background: 'linear-gradient(90deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1))',
+                            }}
+                          ></div>
                           <div className="flex items-center relative z-10 w-full">
                             {/* 🎯 Icon - Always Visible */}
                             <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center">
@@ -296,16 +308,22 @@ export default function AdminSidebar({
                             <Link
                               key={subIndex}
                               href={subItem.href}
-                              className={`flex items-center px-3 py-2 rounded-lg text-sm transition-all duration-200 ${
+                              className={`flex items-center px-3 py-2 rounded-lg text-sm transition-all duration-300 group/sub relative overflow-hidden ${
                                 isItemActive(subItem)
                                   ? darkMode 
-                                    ? 'text-blue-400 bg-blue-500/10 border-l-2 border-blue-400' 
-                                    : 'text-blue-600 bg-blue-500/5 border-l-2 border-blue-600'
+                                    ? 'text-blue-400 bg-gradient-to-r from-blue-500/15 to-purple-500/15 border-l-2 border-blue-400 shadow-md' 
+                                    : 'text-blue-600 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-l-2 border-blue-600 shadow-md'
                                   : darkMode
                                     ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30 border-l-2 border-transparent hover:border-gray-500'
                                     : 'text-slate-500 hover:text-slate-700 hover:bg-white/30 border-l-2 border-transparent hover:border-slate-300'
                               } ${sidebarOpen || sidebarHovered ? 'space-x-2' : 'justify-center'}`}
                             >
+                              {/* Submenu hover effect */}
+                              <div className="absolute inset-0 rounded-lg opacity-0 group-hover/sub:opacity-100 transition-opacity duration-300"
+                                style={{
+                                  background: 'linear-gradient(90deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05))',
+                                }}
+                              ></div>
                               <subItem.icon className={`w-4 h-4 flex-shrink-0 ${
                                 isItemActive(subItem)
                                   ? darkMode ? 'text-blue-400' : 'text-blue-600'
@@ -327,11 +345,13 @@ export default function AdminSidebar({
 
               {/* 📏 Section Divider */}
               {sectionIndex < adminMenuConfig.length - 1 && (
-                <div className={`mx-3 my-4 border-t transition-all duration-500 ${
-                  darkMode ? 'border-gray-600/30' : 'border-white/10'
-                } ${
+                <div className={`mx-3 my-4 transition-all duration-500 ${
                   sidebarOpen || sidebarHovered ? 'opacity-100' : 'lg:opacity-0'
-                }`}></div>
+                }`}>
+                  <div className={`h-px bg-gradient-to-r from-transparent via-current to-transparent opacity-30 ${
+                    darkMode ? 'text-gray-400' : 'text-slate-400'
+                  }`}></div>
+                </div>
               )}
             </div>
           ))}
@@ -339,14 +359,20 @@ export default function AdminSidebar({
       </nav>
 
       {/* 👤 Admin User Profile Section */}
-      <div className={`border-t p-4 ${darkMode ? 'border-gray-600/30' : 'border-white/10'}`}>
-        <div className={`flex items-center rounded-xl transition-all duration-300 group/profile ${
+      <div className={`p-3 border-t ${darkMode ? 'border-gray-600/30' : 'border-gray-200/20'}`}>
+        <div className={`flex items-center rounded-xl transition-all duration-300 group/profile shadow-sm relative overflow-hidden ${
           darkMode 
             ? 'bg-gray-700/30 hover:bg-gray-600/40' 
             : 'bg-white/20 hover:bg-white/40'
         } ${
           sidebarOpen || sidebarHovered ? 'p-3 space-x-3' : 'p-2 justify-center'
         }`}>
+          {/* Profile hover effect */}
+          <div className="absolute inset-0 rounded-xl opacity-0 group-hover/profile:opacity-100 transition-opacity duration-300"
+            style={{
+              background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05))',
+            }}
+          ></div>
           <div className="relative flex-shrink-0">
             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
               <span className="text-white text-xs font-bold">

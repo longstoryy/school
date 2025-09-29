@@ -228,9 +228,9 @@ export default function AdminNavbar({
               <div className={`flex items-center transition-all duration-300 ${
                 searchExpanded ? 'w-80' : 'w-64'
               }`}>
-                <div className="relative w-full">
-                  <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${
-                    darkMode ? 'text-gray-400' : 'text-gray-500'
+                <div className="relative w-full group">
+                  <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 transition-colors duration-200 ${
+                    darkMode ? 'text-gray-400 group-focus-within:text-blue-400' : 'text-gray-500 group-focus-within:text-blue-500'
                   }`} />
                   <input
                     type="text"
@@ -238,12 +238,21 @@ export default function AdminNavbar({
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onFocus={() => setSearchExpanded(true)}
-                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border transition-all duration-200 ${
+                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border transition-all duration-300 ${
                       darkMode 
-                        ? 'bg-gray-800/50 border-gray-600/50 text-white placeholder-gray-400 focus:border-blue-500 focus:bg-gray-800/80' 
-                        : 'bg-white/50 border-gray-200/50 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:bg-white/80'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                        ? 'bg-gray-800/50 border-gray-600/50 text-white placeholder-gray-400 focus:border-blue-500 focus:bg-gray-800/80 focus:shadow-lg' 
+                        : 'bg-white/50 border-gray-200/50 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:bg-white/80 focus:shadow-lg'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500/20 backdrop-blur-sm`}
+                    style={{
+                      backdropFilter: 'blur(10px)'
+                    }}
                   />
+                  {/* Search input glow effect */}
+                  <div className="absolute inset-0 rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05))',
+                    }}
+                  ></div>
                 </div>
               </div>
 
@@ -343,7 +352,12 @@ export default function AdminNavbar({
               {showQuickActions && (
                 <div className={`absolute top-full right-0 mt-2 w-72 rounded-xl shadow-2xl border overflow-hidden z-50 ${
                   darkMode ? 'bg-gray-800/95 border-gray-600/50' : 'bg-white/95 border-gray-200/50'
-                }`} style={{ backdropFilter: 'blur(20px)' }}>
+                }`} style={{ 
+                  backdropFilter: 'blur(20px)',
+                  background: darkMode 
+                    ? 'linear-gradient(135deg, rgba(17, 24, 39, 0.95) 0%, rgba(31, 41, 55, 0.90) 100%)'
+                    : 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.90) 100%)'
+                }}>
                   <div className="p-4">
                     <div className="text-sm font-medium mb-3">Quick Actions</div>
                     <div className="grid grid-cols-2 gap-3">
@@ -351,17 +365,23 @@ export default function AdminNavbar({
                         <a
                           key={action.id}
                           href={action.href}
-                          className={`p-3 rounded-lg transition-all duration-200 group ${
+                          className={`p-3 rounded-lg transition-all duration-300 group relative overflow-hidden ${
                             darkMode ? 'hover:bg-gray-700/50' : 'hover:bg-gray-100/50'
                           }`}
                         >
-                          <div className={`w-8 h-8 bg-gradient-to-r ${action.color} rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform`}>
+                          {/* Hover gradient effect */}
+                          <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                            style={{
+                              background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05))',
+                            }}
+                          ></div>
+                          <div className={`relative z-10 w-8 h-8 bg-gradient-to-r ${action.color} rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-all duration-300 shadow-lg`}>
                             <action.icon className="w-4 h-4 text-white" />
                           </div>
-                          <div className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                          <div className={`relative z-10 text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                             {action.label}
                           </div>
-                          <div className="text-xs text-gray-500">{action.description}</div>
+                          <div className="relative z-10 text-xs text-gray-500">{action.description}</div>
                         </a>
                       ))}
                     </div>
@@ -392,7 +412,12 @@ export default function AdminNavbar({
               {showNotifications && (
                 <div className={`absolute top-full right-0 mt-2 w-96 rounded-xl shadow-2xl border overflow-hidden z-50 ${
                   darkMode ? 'bg-gray-800/95 border-gray-600/50' : 'bg-white/95 border-gray-200/50'
-                }`} style={{ backdropFilter: 'blur(20px)' }}>
+                }`} style={{ 
+                  backdropFilter: 'blur(20px)',
+                  background: darkMode 
+                    ? 'linear-gradient(135deg, rgba(17, 24, 39, 0.95) 0%, rgba(31, 41, 55, 0.90) 100%)'
+                    : 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.90) 100%)'
+                }}>
                   <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                     <div className="flex items-center justify-between">
                       <div className="text-sm font-medium">Admin Notifications</div>
@@ -403,10 +428,16 @@ export default function AdminNavbar({
                     {adminNotifications.map((notification) => (
                       <div
                         key={notification.id}
-                        className={`p-4 border-b border-gray-100 dark:border-gray-700 transition-colors ${
+                        className={`p-4 border-b border-gray-100 dark:border-gray-700 transition-all duration-300 group relative overflow-hidden ${
                           !notification.read ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''
                         } ${darkMode ? 'hover:bg-gray-700/30' : 'hover:bg-gray-50/50'}`}
                       >
+                        {/* Notification hover effect */}
+                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                          style={{
+                            background: 'linear-gradient(90deg, rgba(59, 130, 246, 0.02), rgba(139, 92, 246, 0.02))',
+                          }}
+                        ></div>
                         <div className="flex items-start space-x-3">
                           <div className={`p-2 rounded-lg ${getNotificationColor(notification.type)} bg-current/10`}>
                             <notification.icon className={`w-4 h-4 ${getNotificationColor(notification.type)}`} />
