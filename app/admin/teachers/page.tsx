@@ -4,8 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Users, UserPlus, Search, Filter, MoreVertical, Mail, Phone, Edit, Trash2, Eye } from 'lucide-react';
 import Link from 'next/link';
-import Navigation from '@/components/shared/Navigation';
-import Sidebar from '@/components/shared/Sidebar';
+import AdminNavbar from '@/components/admin/AdminNavbar';
+import AdminSidebar from '@/components/admin/AdminSidebar';
 
 export default function TeachersPage() {
   const [user, setUser] = useState<any>(null);
@@ -122,29 +122,24 @@ export default function TeachersPage() {
 
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
-      {/* Navigation */}
-      <Navigation
+      {/* Admin Navigation */}
+      <AdminNavbar
         darkMode={darkMode}
         onDarkModeToggle={handleDarkModeToggle}
         user={user}
-        role="admin"
         onLogout={handleLogout}
         onSidebarToggle={handleSidebarToggle}
         sidebarOpen={sidebarOpen}
         sidebarHovered={sidebarHovered}
       />
 
-      {/* Sidebar */}
-      <Sidebar
+      {/* Admin Sidebar */}
+      <AdminSidebar
         darkMode={darkMode}
         sidebarOpen={sidebarOpen}
         sidebarHovered={sidebarHovered}
         setSidebarOpen={setSidebarOpen}
         setSidebarHovered={setSidebarHovered}
-        activeSubmenu={activeSubmenu}
-        setActiveSubmenu={setActiveSubmenu}
-        expandedSections={expandedSections}
-        setExpandedSections={setExpandedSections}
         user={user}
         onLogout={handleLogout}
       />

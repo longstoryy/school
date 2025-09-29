@@ -1,18 +1,55 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { Bell, Plus, Search, Filter, Calendar, Users, Eye, Edit, Trash2, Send, Pin, AlertCircle } from 'lucide-react';
+import AdminNavbar from '@/components/admin/AdminNavbar';
+import AdminSidebar from '@/components/admin/AdminSidebar';
 
 export default function AnnouncementsPage() {
+  const [user, setUser] = useState<any>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarHovered, setSidebarHovered] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
+  const router = useRouter();
 
   useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    } else {
+      router.push('/login');
+      return;
+    }
+
     const savedDarkMode = localStorage.getItem('darkMode') === 'true';
     setDarkMode(savedDarkMode);
+  }, [router]);
+
+  const handleSidebarToggle = useCallback(() => {
+    setSidebarOpen(prev => !prev);
   }, []);
+
+  const handleDarkModeToggle = useCallback(() => {
+    setDarkMode(prev => {
+      const newMode = !prev;
+      localStorage.setItem('darkMode', newMode.toString());
+      return newMode;
+    });
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    router.push('/login');
+  };
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
 
   const announcements = [
     {
@@ -139,7 +176,26 @@ export default function AnnouncementsPage() {
 
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
-      <div className="p-4 sm:p-6" style={{ paddingTop: '98px' }}>
+      <AdminNavbar
+        darkMode={darkMode}
+        onDarkModeToggle={handleDarkModeToggle}
+        user={user}
+        onLogout={handleLogout}
+        onSidebarToggle={handleSidebarToggle}
+        sidebarOpen={sidebarOpen}
+        sidebarHovered={sidebarHovered}
+      />
+      <AdminSidebar
+        darkMode={darkMode}
+        sidebarOpen={sidebarOpen}
+        sidebarHovered={sidebarHovered}
+        setSidebarOpen={setSidebarOpen}
+        setSidebarHovered={setSidebarHovered}
+        user={user}
+        onLogout={handleLogout}
+      />
+      <div className={`transition-all duration-500 ${sidebarOpen || sidebarHovered ? 'lg:ml-60' : 'lg:ml-20'}`}>
+        <main className="p-4 sm:p-6" style={{ paddingTop: '98px' }}>
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
           <div>
@@ -466,6 +522,7 @@ export default function AnnouncementsPage() {
             </div>
           </div>
         </div>
+        </main>
       </div>
     </div>
   );
