@@ -15,6 +15,8 @@ import {
   Home
 } from 'lucide-react';
 import Link from 'next/link';
+import AdminSidebar from './AdminSidebar';
+import AdminNavbar from './AdminNavbar';
 
 interface ComingSoonProps {
   title?: string;
@@ -33,6 +35,19 @@ const ComingSoon: React.FC<ComingSoonProps> = ({
 }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [sparkles, setSparkles] = useState<Array<{ id: number; x: number; y: number; delay: number }>>([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarHovered, setSidebarHovered] = useState(false);
+
+  // Mock user data for admin components
+  const user = {
+    name: 'Admin User',
+    email: 'admin@school.com',
+    avatar: null
+  };
+
+  const handleSidebarToggle = () => setSidebarOpen(!sidebarOpen);
+  const handleDarkModeToggle = () => {};
+  const handleLogout = () => {};
 
   // Track mouse for interactive effects
   useEffect(() => {
@@ -70,11 +85,40 @@ const ComingSoon: React.FC<ComingSoonProps> = ({
   ];
 
   return (
-    <div className={`min-h-screen relative overflow-hidden ${
-      darkMode 
-        ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900' 
-        : 'bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50'
-    }`}>
+    <div className={`min-h-screen ${darkMode ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
+      {/* Admin Navigation */}
+      <AdminNavbar
+        darkMode={darkMode}
+        onDarkModeToggle={handleDarkModeToggle}
+        user={user}
+        onLogout={handleLogout}
+        onSidebarToggle={handleSidebarToggle}
+        sidebarOpen={sidebarOpen}
+        sidebarHovered={sidebarHovered}
+      />
+
+      {/* Admin Sidebar */}
+      <AdminSidebar
+        darkMode={darkMode}
+        sidebarOpen={sidebarOpen}
+        sidebarHovered={sidebarHovered}
+        setSidebarOpen={setSidebarOpen}
+        setSidebarHovered={setSidebarHovered}
+        user={user}
+        onLogout={handleLogout}
+      />
+
+      {/* Main Content Area */}
+      <div 
+        className={`transition-all duration-500 ${
+          sidebarOpen || sidebarHovered ? 'ml-60' : 'ml-20'
+        } pt-16`}
+      >
+        <div className={`min-h-screen relative overflow-hidden ${
+          darkMode 
+            ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900' 
+            : 'bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50'
+        }`}>
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         {/* Floating Sparkles */}
@@ -115,22 +159,6 @@ const ComingSoon: React.FC<ComingSoonProps> = ({
 
       {/* Main Content */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 text-center">
-        {/* Back Navigation */}
-        <div className="absolute top-8 left-8">
-          <Link
-            href="/admin/dashboard"
-            className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 transform hover:scale-105 ${
-              darkMode
-                ? 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/60 hover:text-white'
-                : 'bg-white/50 text-gray-600 hover:bg-white/80 hover:text-gray-800'
-            } backdrop-blur-sm border ${
-              darkMode ? 'border-gray-600/30' : 'border-gray-200/30'
-            }`}
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to Dashboard</span>
-          </Link>
-        </div>
 
         {/* Main Illustration */}
         <div className="mb-8 relative">
@@ -283,6 +311,8 @@ const ComingSoon: React.FC<ComingSoonProps> = ({
           50% { box-shadow: 0 0 40px rgba(139, 92, 246, 0.5); }
         }
       `}</style>
+        </div>
+      </div>
     </div>
   );
 };
