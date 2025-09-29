@@ -168,21 +168,37 @@ export default function AdminSidebar({
                   <div key={`collapsed-item-${itemIndex}`} className="relative group">
                     <Link
                       href={item.href}
-                      className={`icon-representative w-full p-2 rounded-xl transition-all duration-300 flex items-center justify-center group/icon relative overflow-hidden border ${
+                      className={`icon-representative w-full p-2 rounded-xl transition-all duration-300 flex items-center justify-center group/icon relative overflow-hidden border transform hover:scale-105 active:scale-95 ${
                         isItemActive(item) || hasActiveSubmenu(item)
                           ? darkMode
-                            ? 'bg-gradient-to-br from-blue-500/30 to-purple-600/30 text-blue-300 shadow-xl border-blue-400/60'
-                            : 'bg-gradient-to-br from-blue-500/20 to-purple-600/20 text-blue-700 shadow-xl border-blue-400/60'
+                            ? 'bg-gradient-to-br from-blue-500/30 to-purple-600/30 text-blue-300 shadow-xl border-blue-400/60 animate-pulse'
+                            : 'bg-gradient-to-br from-blue-500/20 to-purple-600/20 text-blue-700 shadow-xl border-blue-400/60 animate-pulse'
                           : darkMode
                             ? 'text-gray-300 hover:text-white hover:bg-gradient-to-br hover:from-gray-700/40 hover:to-gray-600/40 hover:shadow-lg border-transparent hover:border-gray-500/50'
                             : 'text-slate-600 hover:text-slate-800 hover:bg-gradient-to-br hover:from-white/60 hover:to-gray-50/60 hover:shadow-lg border-transparent hover:border-gray-400/60'
                       }`}
                       title={item.name}
+                      onMouseEnter={(e) => {
+                        // Sweet ripple effect on hover
+                        const button = e.currentTarget;
+                        const ripple = document.createElement('div');
+                        ripple.className = 'absolute inset-0 rounded-xl bg-gradient-to-r from-blue-400/30 via-purple-400/30 to-pink-400/30 animate-ping';
+                        button.appendChild(ripple);
+                        setTimeout(() => ripple.remove(), 600);
+                      }}
                     >
                       {/* Gradient Border Animation */}
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 opacity-0 group-hover/icon:opacity-100 transition-opacity duration-300"></div>
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 opacity-0 group-hover/icon:opacity-100 transition-opacity duration-500"></div>
                       
-                      <item.icon className="w-5 h-5 transition-all duration-300 group-hover/icon:scale-125 relative z-10 drop-shadow-sm" />
+                      {/* Sweet glow effect for active items */}
+                      {(isItemActive(item) || hasActiveSubmenu(item)) && (
+                        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-pink-400/20 animate-pulse"></div>
+                      )}
+                      
+                      <item.icon className="w-5 h-5 transition-all duration-300 group-hover/icon:scale-125 group-hover/icon:rotate-12 relative z-10 drop-shadow-sm" />
+                      
+                      {/* Sparkle effect on hover */}
+                      <div className="absolute top-0 right-0 w-2 h-2 bg-gradient-to-r from-yellow-400 to-pink-400 rounded-full opacity-0 group-hover/icon:opacity-100 group-hover/icon:animate-bounce transition-all duration-300 delay-100"></div>
                     </Link>
                   </div>
                 ))}
@@ -199,22 +215,46 @@ export default function AdminSidebar({
             <div key={sectionIndex} className="space-y-1">
               {/* 🏷️ Collapsible Section Header */}
               <button
-                onClick={() => toggleSection(section.title)}
-                className={`w-full flex items-center justify-between px-3 py-2 text-xs font-semibold uppercase tracking-wider transition-all duration-300 rounded-lg group/section relative overflow-hidden ${
+                onClick={() => {
+                  toggleSection(section.title);
+                  // Sweet click feedback
+                  const button = document.activeElement as HTMLElement;
+                  if (button) {
+                    button.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                      button.style.transform = 'scale(1)';
+                    }, 150);
+                  }
+                }}
+                className={`w-full flex items-center justify-between px-3 py-2 text-xs font-semibold uppercase tracking-wider transition-all duration-300 rounded-lg group/section relative overflow-hidden transform hover:scale-[1.02] active:scale-95 ${
                   darkMode
                     ? 'text-gray-400/90 hover:text-gray-200 hover:bg-gray-700/30'
                     : 'text-slate-500/90 hover:text-slate-700 hover:bg-white/30'
                 }`}
+                onMouseEnter={(e) => {
+                  // Delightful section hover effect
+                  const element = e.currentTarget;
+                  const sparkle = document.createElement('div');
+                  sparkle.className = 'absolute top-1 right-8 w-1 h-1 bg-gradient-to-r from-yellow-400 to-pink-400 rounded-full animate-ping';
+                  element.appendChild(sparkle);
+                  setTimeout(() => sparkle.remove(), 1000);
+                }}
               >
                 {/* Section header gradient effect */}
                 <div className="absolute inset-0 rounded-lg opacity-0 group-hover/section:opacity-100 transition-opacity duration-300"
                   style={{
-                    background: 'linear-gradient(90deg, rgba(59, 130, 246, 0.03), rgba(139, 92, 246, 0.03))',
+                    background: 'linear-gradient(90deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05))',
                   }}
                 ></div>
-                <span className="relative z-10 transition-all duration-300 overflow-hidden whitespace-nowrap">{section.title}</span>
-                <ChevronRight className={`w-3 h-3 transition-all duration-300 flex-shrink-0 relative z-10 ${
-                  expandedSections[section.title] ? 'rotate-90' : ''
+                
+                {/* Sweet expanding indicator */}
+                {expandedSections[section.title] && (
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-400 via-purple-400 to-pink-400 rounded-r-full animate-pulse"></div>
+                )}
+                
+                <span className="relative z-10 transition-all duration-300 overflow-hidden whitespace-nowrap group-hover/section:text-transparent group-hover/section:bg-clip-text group-hover/section:bg-gradient-to-r group-hover/section:from-blue-400 group-hover/section:to-purple-400">{section.title}</span>
+                <ChevronRight className={`w-3 h-3 transition-all duration-500 flex-shrink-0 relative z-10 group-hover/section:text-blue-400 ${
+                  expandedSections[section.title] ? 'rotate-90 text-blue-400' : ''
                 }`} />
               </button>
 
@@ -227,7 +267,7 @@ export default function AdminSidebar({
                       <div className="flex items-center">
                         <Link
                           href={item.href}
-                          className={`premium-menu-item flex items-center flex-1 px-3 py-2.5 rounded-lg transition-all duration-300 group/item relative overflow-hidden hover:translate-x-1 ${
+                          className={`premium-menu-item flex items-center flex-1 px-3 py-2.5 rounded-lg transition-all duration-300 group/item relative overflow-hidden hover:translate-x-2 transform hover:scale-[1.02] active:scale-[0.98] ${
                             isItemActive(item) || hasActiveSubmenu(item)
                               ? darkMode
                                 ? 'bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-blue-300 shadow-lg border border-blue-400/40'
@@ -239,6 +279,19 @@ export default function AdminSidebar({
                           style={{
                             backdropFilter: (isItemActive(item) || hasActiveSubmenu(item)) ? 'blur(15px)' : 'none'
                           }}
+                          onMouseEnter={(e) => {
+                            // Sweet success ripple effect
+                            const element = e.currentTarget;
+                            const rect = element.getBoundingClientRect();
+                            const ripple = document.createElement('div');
+                            ripple.className = 'absolute rounded-full bg-gradient-to-r from-green-400/40 via-blue-400/40 to-purple-400/40 animate-ping pointer-events-none';
+                            ripple.style.width = ripple.style.height = '20px';
+                            ripple.style.left = '10px';
+                            ripple.style.top = '50%';
+                            ripple.style.transform = 'translateY(-50%)';
+                            element.appendChild(ripple);
+                            setTimeout(() => ripple.remove(), 800);
+                          }}
                         >
                           {/* 🌈 Animated Border Gradient */}
                           <div className="absolute inset-0 rounded-lg opacity-0 group-hover/item:opacity-100 transition-opacity duration-500"
@@ -246,6 +299,11 @@ export default function AdminSidebar({
                               background: 'linear-gradient(90deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1))',
                             }}
                           ></div>
+                          
+                          {/* Sweet active glow */}
+                          {(isItemActive(item) || hasActiveSubmenu(item)) && (
+                            <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-blue-400/10 via-purple-400/10 to-pink-400/10 animate-pulse"></div>
+                          )}
                           <div className="flex items-center relative z-10 w-full">
                             {/* 🎯 Icon - Always Visible */}
                             <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center">

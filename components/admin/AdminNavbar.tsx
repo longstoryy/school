@@ -188,10 +188,33 @@ export default function AdminNavbar({
   };
 
   return (
-    <nav 
-      className={`fixed top-0 right-0 z-40 transition-all duration-500 ${
-        isScrolled ? 'backdrop-blur-xl' : 'backdrop-blur-lg'
-      }`}
+    <>
+      {/* Sweet CSS animations */}
+      <style jsx>{`
+        @keyframes swing {
+          0%, 100% { transform: rotate(0deg); }
+          15% { transform: rotate(15deg); }
+          30% { transform: rotate(-10deg); }
+          45% { transform: rotate(5deg); }
+          60% { transform: rotate(-5deg); }
+          75% { transform: rotate(2deg); }
+        }
+        
+        @keyframes heartbeat {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.1); }
+        }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-4px); }
+        }
+      `}</style>
+      
+      <nav 
+        className={`fixed top-0 right-0 z-40 transition-all duration-500 ${
+          isScrolled ? 'backdrop-blur-xl' : 'backdrop-blur-lg'
+        }`}
       style={{
         left: sidebarOpen || sidebarHovered ? '240px' : '80px',
         background: darkMode 
@@ -213,14 +236,37 @@ export default function AdminNavbar({
           <div className="flex items-center space-x-4">
             {/* Mobile Sidebar Toggle */}
             <button
-              onClick={onSidebarToggle}
-              className={`lg:hidden p-2 rounded-xl transition-all duration-200 ${
+              onClick={(e) => {
+                onSidebarToggle();
+                // Sweet click animation
+                const button = e.currentTarget;
+                button.style.transform = 'scale(0.9) rotate(180deg)';
+                setTimeout(() => {
+                  button.style.transform = 'scale(1) rotate(0deg)';
+                }, 200);
+                
+                // Success ripple
+                const ripple = document.createElement('div');
+                ripple.className = 'absolute inset-0 rounded-xl bg-gradient-to-r from-green-400/30 via-blue-400/30 to-purple-400/30 animate-ping pointer-events-none';
+                button.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+              }}
+              className={`lg:hidden p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 relative overflow-hidden group ${
                 darkMode 
                   ? 'text-gray-300 hover:text-white hover:bg-gray-700/50' 
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/50'
               }`}
             >
-              {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {/* Sweet hover glow */}
+              <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-blue-400/10 via-purple-400/10 to-pink-400/10"></div>
+              
+              {sidebarOpen ? 
+                <X className="w-5 h-5 transition-all duration-300 group-hover:rotate-90 relative z-10" /> : 
+                <Menu className="w-5 h-5 transition-all duration-300 group-hover:scale-110 relative z-10" />
+              }
+              
+              {/* Sparkle effect */}
+              <div className="absolute top-0 right-0 w-1.5 h-1.5 bg-gradient-to-r from-yellow-400 to-pink-400 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-bounce transition-all duration-300 delay-100"></div>
             </button>
 
             {/* Advanced Admin Search */}
@@ -338,14 +384,34 @@ export default function AdminNavbar({
             {/* Quick Actions */}
             <div ref={quickActionsRef} className="relative">
               <button
-                onClick={() => setShowQuickActions(!showQuickActions)}
-                className={`p-2 rounded-xl transition-all duration-200 ${
+                onClick={(e) => {
+                  setShowQuickActions(!showQuickActions);
+                  // Delightful rotation animation
+                  const button = e.currentTarget;
+                  const icon = button.querySelector('svg');
+                  if (icon) {
+                    icon.style.transform = showQuickActions ? 'rotate(0deg) scale(1)' : 'rotate(135deg) scale(1.1)';
+                  }
+                  
+                  // Sweet success feedback
+                  const ripple = document.createElement('div');
+                  ripple.className = 'absolute inset-0 rounded-xl bg-gradient-to-r from-emerald-400/40 via-blue-400/40 to-purple-400/40 animate-ping pointer-events-none';
+                  button.appendChild(ripple);
+                  setTimeout(() => ripple.remove(), 700);
+                }}
+                className={`p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 relative overflow-hidden group ${
                   darkMode 
                     ? 'text-gray-300 hover:text-white hover:bg-gray-700/50' 
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/50'
                 }`}
               >
-                <Plus className="w-5 h-5" />
+                {/* Sweet glow effect */}
+                <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-emerald-400/10 via-blue-400/10 to-purple-400/10"></div>
+                
+                <Plus className={`w-5 h-5 transition-all duration-300 relative z-10 ${showQuickActions ? 'rotate-45' : 'rotate-0'}`} />
+                
+                {/* Magic sparkle */}
+                <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-gradient-to-r from-emerald-400 to-blue-400 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-all duration-300"></div>
               </button>
 
               {/* Quick Actions Dropdown */}
@@ -393,18 +459,43 @@ export default function AdminNavbar({
             {/* Admin Notifications */}
             <div ref={notificationRef} className="relative">
               <button
-                onClick={() => setShowNotifications(!showNotifications)}
-                className={`p-2 rounded-xl transition-all duration-200 relative ${
+                onClick={(e) => {
+                  setShowNotifications(!showNotifications);
+                  // Sweet bell ring animation
+                  const button = e.currentTarget;
+                  const bell = button.querySelector('svg');
+                  if (bell) {
+                    bell.style.animation = 'none';
+                    setTimeout(() => {
+                      bell.style.animation = 'swing 0.6s ease-in-out';
+                    }, 10);
+                  }
+                  
+                  // Notification success ripple
+                  const ripple = document.createElement('div');
+                  ripple.className = 'absolute inset-0 rounded-xl bg-gradient-to-r from-orange-400/40 via-red-400/40 to-pink-400/40 animate-ping pointer-events-none';
+                  button.appendChild(ripple);
+                  setTimeout(() => ripple.remove(), 800);
+                }}
+                className={`p-2 rounded-xl transition-all duration-300 relative transform hover:scale-110 active:scale-95 overflow-hidden group ${
                   darkMode 
                     ? 'text-gray-300 hover:text-white hover:bg-gray-700/50' 
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/50'
                 }`}
               >
-                <Bell className="w-5 h-5" />
+                {/* Sweet notification glow */}
+                <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-orange-400/10 via-red-400/10 to-pink-400/10"></div>
+                
+                <Bell className="w-5 h-5 transition-all duration-300 relative z-10 group-hover:animate-bounce" />
                 {unreadCount > 0 && (
-                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full flex items-center justify-center font-bold animate-pulse shadow-lg">
                     {unreadCount}
                   </div>
+                )}
+                
+                {/* Magic notification sparkle */}
+                {unreadCount > 0 && (
+                  <div className="absolute -top-0.5 -left-0.5 w-1.5 h-1.5 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full animate-ping"></div>
                 )}
               </button>
 
@@ -545,5 +636,6 @@ export default function AdminNavbar({
         </div>
       </div>
     </nav>
+    </>
   );
 }
