@@ -29,7 +29,8 @@ import {
   UserPlus,
   Building,
   CreditCard,
-  TrendingUp
+  TrendingUp,
+  ClipboardList
 } from 'lucide-react';
 
 interface AdminNavbarProps {
@@ -162,14 +163,16 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({
     }
   ];
 
-  // Quick actions for command palette
+  // Enhanced quick actions for command palette
   const quickActions: QuickAction[] = [
-    { id: '1', label: 'Add Student', icon: UserPlus, href: '/admin/students/add', description: 'Register new student' },
-    { id: '2', label: 'Add Teacher', icon: GraduationCap, href: '/admin/teachers/add', description: 'Add teaching staff' },
-    { id: '3', label: 'Create Class', icon: Building, href: '/admin/classes/create', description: 'Setup new class' },
-    { id: '4', label: 'Fee Collection', icon: CreditCard, href: '/admin/fees', description: 'Manage payments' },
-    { id: '5', label: 'View Reports', icon: TrendingUp, href: '/admin/reports', description: 'Analytics & insights' },
-    { id: '6', label: 'Settings', icon: Settings, href: '/admin/settings', description: 'System configuration' }
+    { id: '1', label: 'Add Student', icon: UserPlus, href: '/admin/students/add', description: 'Register new student enrollment' },
+    { id: '2', label: 'Add Teacher', icon: GraduationCap, href: '/admin/teachers/add', description: 'Add new teaching staff member' },
+    { id: '3', label: 'Create Class', icon: Building, href: '/admin/classes/create', description: 'Setup new class with schedule' },
+    { id: '4', label: 'Fee Collection', icon: DollarSign, href: '/admin/fees', description: 'Manage student fee payments' },
+    { id: '5', label: 'View Reports', icon: FileText, href: '/admin/reports', description: 'Generate academic & financial reports' },
+    { id: '6', label: 'Schedule Event', icon: Calendar, href: '/admin/events', description: 'Create school events & activities' },
+    { id: '7', label: 'Send Messages', icon: MessageCircle, href: '/admin/messages', description: 'Communicate with students & parents' },
+    { id: '8', label: 'Exam Management', icon: ClipboardList, href: '/admin/exams', description: 'Create & manage examinations' }
   ];
 
   const unreadCount = notifications.filter(n => !n.read).length;
@@ -250,11 +253,32 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({
               {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
             </button>
 
+            {/* Messages */}
+            <div className="relative">
+              <button
+                className={`p-2 rounded-lg transition-all duration-200 hover:scale-110 relative group ${
+                  darkMode 
+                    ? 'text-gray-300 hover:text-white hover:bg-gray-800' 
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                }`}
+                title="Messages"
+              >
+                <MessageCircle className="w-5 h-5" />
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs rounded-full flex items-center justify-center font-bold animate-pulse">
+                  3
+                </div>
+                {/* Modern tooltip */}
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium text-white bg-gray-900 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                  3 new messages
+                </div>
+              </button>
+            </div>
+
             {/* Notifications */}
             <div ref={notificationRef} className="relative">
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
-                className={`p-2 rounded-lg transition-all duration-200 hover:scale-105 relative ${
+                className={`p-2 rounded-lg transition-all duration-200 hover:scale-110 relative group ${
                   darkMode 
                     ? 'text-gray-300 hover:text-white hover:bg-gray-800' 
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
@@ -263,10 +287,14 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({
               >
                 <Bell className="w-5 h-5" />
                 {unreadCount > 0 && (
-                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full flex items-center justify-center font-bold animate-bounce">
                     {unreadCount}
                   </div>
                 )}
+                {/* Modern tooltip */}
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium text-white bg-gray-900 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                  {unreadCount} notifications
+                </div>
               </button>
 
               {/* Notifications Dropdown */}
@@ -431,13 +459,12 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({
                 <div className="flex items-center space-x-2 text-xs text-gray-500">
                   <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded">ESC</kbd>
                   <span>to close</span>
-                </div>
               </div>
 
               {/* Quick Actions */}
               <div className="p-4 max-h-96 overflow-y-auto">
-                <div className="text-sm font-medium text-gray-500 mb-3">Quick Actions</div>
-                <div className="space-y-2">
+                <div className={`text-sm font-semibold mb-4 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>⚡ Quick Actions</div>
+                <div className="space-y-1">
                   {quickActions
                     .filter(action => 
                       searchQuery === '' || 
@@ -448,21 +475,23 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({
                     <a
                       key={action.id}
                       href={action.href}
-                      className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 group ${
-                        darkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
+                      className={`flex items-center space-x-4 p-4 rounded-xl transition-all duration-300 group hover:scale-[1.02] ${
+                        darkMode ? 'hover:bg-gray-800/80 hover:shadow-lg' : 'hover:bg-gray-50 hover:shadow-md'
                       }`}
                       onClick={() => setShowCommandPalette(false)}
                     >
-                      <div className="p-2 rounded-lg bg-blue-500 text-white">
-                        <action.icon className="w-4 h-4" />
+                      <div className="p-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
+                        <action.icon className="w-5 h-5" />
                       </div>
                       <div className="flex-1">
-                        <div className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        <div className={`font-semibold text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                           {action.label}
                         </div>
-                        <div className="text-xs text-gray-500">{action.description}</div>
+                        <div className={`text-xs mt-0.5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{action.description}</div>
                       </div>
-                      <ArrowRight className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <ArrowRight className={`w-4 h-4 opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-1 ${
+                        darkMode ? 'text-gray-400' : 'text-gray-500'
+                      }`} />
                     </a>
                   ))}
                 </div>
@@ -470,7 +499,6 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({
                 {/* Recent Pages */}
                 <div className="mt-6">
                   <div className="text-sm font-medium text-gray-500 mb-3">Recent Pages</div>
-                  <div className="space-y-2">
                     <div className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer ${
                       darkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
                     }`}>
