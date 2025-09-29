@@ -18,6 +18,8 @@ interface NavigationProps {
   onLogout: () => void;
   onSidebarToggle?: () => void;
   sidebarOpen?: boolean;
+  sidebarHovered?: boolean;
+  sidebarHovered?: boolean;
 }
 
 interface NotificationItem {

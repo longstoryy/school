@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import { 
   LayoutDashboard, Users, GraduationCap, BookOpen, Calendar, Clock, FileText, BarChart3, TrendingUp, Settings, Bell, MessageCircle, Mail, User, Target, ClipboardList, Award, Building, Car, Library, Shield, Globe, Database, Smartphone, UserCheck, UserX, Home, MapPin, FolderOpen, StickyNote, CheckSquare, Phone, Video, CreditCard, UserPlus, Trash2, Heart, Zap, Archive, Download, Upload, Share2, Search, Sun, Moon, Maximize, Plus, Languages, CalendarDays, Command, Trophy, Menu, X, ChevronDown, ChevronRight, LogOut, DollarSign, Lock
 } from 'lucide-react';
-import GlassMorphismNavigation from './navigation';
+import Navigation from '@/components/shared/Navigation';
+import Sidebar from '@/components/shared/Sidebar';
 
 // 🎯 Premium Enterprise TypeScript Interfaces
 interface DashboardStats {
@@ -591,7 +592,7 @@ export default function AdminDashboard() {
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
       {/* 🎨 Glass Morphism Navigation */}
-      <GlassMorphismNavigation
+      <Navigation
         darkMode={darkMode}
         onDarkModeToggle={handleDarkModeToggle}
         user={user}
@@ -599,6 +600,7 @@ export default function AdminDashboard() {
         onLogout={handleLogout}
         onSidebarToggle={handleSidebarToggle}
         sidebarOpen={sidebarOpen}
+        sidebarHovered={sidebarHovered}
       />
       {/* 🚀 Premium Glass Sidebar */}
       <div 
