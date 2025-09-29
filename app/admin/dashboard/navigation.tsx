@@ -244,7 +244,7 @@ export default function GlassMorphismNavigation({
       <nav className={`fixed top-0 z-50 transition-all duration-500 ease-out ${
       isScrolled ? 'backdrop-blur-xl' : 'backdrop-blur-md'
     }`} style={{
-        left: sidebarOpen ? '240px' : '56px',
+        left: sidebarOpen ? '240px' : '80px',
         right: '0',
         background: darkMode 
           ? `linear-gradient(135deg, rgba(17, 24, 39, 0.8) 0%, rgba(31, 41, 55, 0.9) 100%)`

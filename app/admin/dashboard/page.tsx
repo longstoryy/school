@@ -606,7 +606,7 @@ export default function AdminDashboard() {
         className={`fixed inset-y-0 left-0 z-30 transform transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] lg:translate-x-0 flex flex-col group ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } ${
-          sidebarOpen ? 'w-60' : 'lg:w-20 lg:hover:w-60'
+          sidebarOpen ? 'w-60' : sidebarHovered ? 'lg:w-60' : 'lg:w-20'
         }`}
         onMouseEnter={() => {
           if (!sidebarOpen) {
@@ -644,11 +644,11 @@ export default function AdminDashboard() {
       >
         {/* 🎯 Sidebar Header */}
         <div className={`flex items-center justify-between p-4 border-b ${
-          darkMode ? 'border-gray-600/30' : 'border-white/10'
+          darkMode ? '' : 'border-white/10'
         }`}>
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
-              <Shield className="w-4 h-4 text-white" />
+            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+              <Shield className="w-6 h-6 text-white" />
             </div>
             <div className={`transition-all duration-300 overflow-hidden ${
               sidebarOpen || sidebarHovered ? 'opacity-100 max-w-none' : 'lg:opacity-0 lg:max-w-0'
@@ -680,7 +680,7 @@ export default function AdminDashboard() {
 
         {/* 🔍 Premium Search Bar */}
         <div className={`transition-all duration-500 overflow-hidden ${
-          sidebarOpen || sidebarHovered ? 'p-4 opacity-100' : 'lg:p-2 lg:opacity-0'
+          sidebarOpen || sidebarHovered ? 'p-4 opacity-100' : 'lg:hidden'
         }`}>
           <button
             onClick={() => setShowSearchModal(true)}
@@ -705,12 +705,12 @@ export default function AdminDashboard() {
         </div>
 
         {/* 🎨 Premium Navigation */}
-        <nav className="flex-1 overflow-y-auto px-2 py-2 vuexy-scrollbar">
+        <nav className="flex-1 px-2 py-2">
           {/* Collapsed State - Icon Representatives */}
           {!sidebarOpen && !sidebarHovered && (
             <div className="lg:flex flex-col space-y-1 px-2">
               {sidebarItems.map((section, sectionIndex) => (
-                <div key={`collapsed-${sectionIndex}`} className="space-y-2">
+                <div key={`collapsed-${sectionIndex}`} className="space-y-1">
                   {/* Section Divider */}
                   {sectionIndex > 0 && (
                     <div className={`mx-2 my-3 h-px bg-gradient-to-r from-transparent via-current to-transparent opacity-40 ${
@@ -720,14 +720,14 @@ export default function AdminDashboard() {
                   {section.items.map((item, itemIndex) => (
                     <div key={`collapsed-item-${itemIndex}`} className="relative group">
                       <button
-                        className={`icon-representative w-full p-3 rounded-xl transition-all duration-300 flex items-center justify-center group/icon relative overflow-hidden border-2 ${
+                        className={`icon-representative w-full p-2 rounded-lg transition-all duration-300 flex items-center justify-center group/icon relative overflow-hidden  ${
                           (item as any).active
                             ? darkMode
-                              ? 'bg-gradient-to-br from-blue-500/30 to-purple-600/30 border-blue-400/50 text-blue-300 shadow-xl'
+                              ? 'bg-gradient-to-br from-blue-500/30 to-purple-600/30  text-blue-300 shadow-xl'
                               : 'bg-gradient-to-br from-blue-500/20 to-purple-600/20 border-blue-400/60 text-blue-700 shadow-xl'
                             : darkMode
-                              ? 'border-gray-600/30 text-gray-300 hover:text-white hover:bg-gradient-to-br hover:from-gray-700/40 hover:to-gray-600/40 hover:border-gray-500/50 hover:shadow-lg'
-                              : 'border-gray-300/40 text-slate-600 hover:text-slate-800 hover:bg-gradient-to-br hover:from-white/60 hover:to-gray-50/60 hover:border-gray-400/60 hover:shadow-lg'
+                              ? ' text-gray-300 hover:text-white hover:bg-gradient-to-br hover:from-gray-700/40 hover:to-gray-600/40 hover:border-gray-500/50 hover:shadow-lg'
+                              : ' text-slate-600 hover:text-slate-800 hover:bg-gradient-to-br hover:from-white/60 hover:to-gray-50/60 hover:border-gray-400/60 hover:shadow-lg'
                         }`}
                         title={item.name}
                       >
@@ -946,7 +946,7 @@ export default function AdminDashboard() {
                 {/* 📏 Section Divider */}
                 {sectionIndex < sidebarItems.length - 1 && (
                   <div className={`mx-3 my-4 border-t transition-all duration-500 ${
-                    darkMode ? 'border-gray-600/30' : 'border-white/10'
+                    darkMode ? '' : 'border-white/10'
                   } ${
                     sidebarOpen || sidebarHovered ? 'opacity-100' : 'lg:opacity-0'
                   }`}></div>
@@ -958,7 +958,7 @@ export default function AdminDashboard() {
 
         {/* 👤 Premium User Profile */}
         <div className={`p-3 border-t ${
-          darkMode ? 'border-gray-600/30' : 'border-gray-200/20'
+          darkMode ? '' : 'border-gray-200/20'
         }`}>
           <div className={`flex items-center rounded-xl transition-all duration-300 group shadow-sm ${
             darkMode 
@@ -1138,7 +1138,7 @@ export default function AdminDashboard() {
               </div>
               
               {searchResults.length > 0 && (
-                <div className="space-y-2">
+                <div className="space-y-1">
                   {searchResults.map((result: any, index: number) => (
                     <div
                       key={index}
