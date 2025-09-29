@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState, useCallback, useMemo, memo } from 'react';
 import { useRouter } from 'next/navigation';
@@ -1001,7 +1001,7 @@ export default function AdminDashboard() {
       <div className={`transition-all duration-500 ${sidebarOpen || sidebarHovered ? 'lg:ml-60' : 'lg:ml-20'}`}>
         <main className={`relative z-0 ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
           {/* 🎯 Dashboard Content */}
-          <div className="pt-20 p-4 sm:p-6">
+          <div className="p-4 sm:p-6" style={{ paddingTop: '98px' }}>
             {/* 🎨 Welcome Banner */}
             <div className={`relative overflow-hidden rounded-3xl p-8 mb-8 ${
               darkMode ? 'bg-gradient-to-r from-gray-800 to-gray-700' : 'bg-gradient-to-r from-white to-gray-50'
