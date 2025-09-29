@@ -30,7 +30,10 @@ import {
   Building,
   CreditCard,
   TrendingUp,
-  ClipboardList
+  ClipboardList,
+  Zap,
+  Wifi,
+  WifiOff
 } from 'lucide-react';
 
 interface AdminNavbarProps {
@@ -70,6 +73,8 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({
   sidebarHovered
 }) => {
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showMessages, setShowMessages] = useState(false);
+  const [showQuickActions, setShowQuickActions] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -78,6 +83,8 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   
   const notificationRef = useRef<HTMLDivElement>(null);
+  const messagesRef = useRef<HTMLDivElement>(null);
+  const quickActionsRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
 
   // Mount check for hydration
@@ -126,6 +133,12 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({
       if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
         setShowNotifications(false);
       }
+      if (messagesRef.current && !messagesRef.current.contains(event.target as Node)) {
+        setShowMessages(false);
+      }
+      if (quickActionsRef.current && !quickActionsRef.current.contains(event.target as Node)) {
+        setShowQuickActions(false);
+      }
       if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
         setShowProfile(false);
       }
@@ -163,6 +176,46 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({
     }
   ];
 
+  // Mock messages
+  const messages = [
+    {
+      id: '1',
+      sender: 'Sarah Johnson',
+      subject: 'Parent-Teacher Meeting Request',
+      preview: 'Hi, I would like to schedule a meeting to discuss Emma\'s progress...',
+      time: '5 min ago',
+      read: false,
+      avatar: 'SJ'
+    },
+    {
+      id: '2', 
+      sender: 'Michael Chen',
+      subject: 'Fee Payment Confirmation',
+      preview: 'Thank you for the payment. The receipt has been generated...',
+      time: '1 hour ago',
+      read: false,
+      avatar: 'MC'
+    },
+    {
+      id: '3',
+      sender: 'Lisa Williams',
+      subject: 'Student Absence Notification',
+      preview: 'My daughter will be absent tomorrow due to a medical appointment...',
+      time: '2 hours ago',
+      read: true,
+      avatar: 'LW'
+    },
+    {
+      id: '4',
+      sender: 'Admin System',
+      subject: 'Weekly Report Generated',
+      preview: 'Your weekly academic report is ready for review...',
+      time: '1 day ago',
+      read: true,
+      avatar: 'AS'
+    }
+  ];
+
   // Enhanced quick actions for command palette
   const quickActions: QuickAction[] = [
     { id: '1', label: 'Add Student', icon: UserPlus, href: '/admin/students/add', description: 'Register new student enrollment' },
@@ -176,6 +229,7 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({
   ];
 
   const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadMessages = messages.filter(m => !m.read).length;
 
   return (
     <>
@@ -240,6 +294,79 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({
               </span>
             </div>
 
+            {/* System Online Indicator */}
+            <div className="hidden lg:flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <Wifi className="w-4 h-4 text-green-600 dark:text-green-400" />
+              <span className="text-sm font-medium text-green-700 dark:text-green-300">Online</span>
+            </div>
+
+            {/* Quick Actions */}
+            <div ref={quickActionsRef} className="relative">
+              <button
+                onClick={() => setShowQuickActions(!showQuickActions)}
+                className={`p-2 rounded-lg transition-all duration-200 hover:scale-110 relative group ${
+                  darkMode 
+                    ? 'text-gray-300 hover:text-white hover:bg-gray-800' 
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                }`}
+                title="Quick Actions"
+              >
+                <Zap className="w-5 h-5" />
+                {/* Modern tooltip */}
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium text-white bg-gray-900 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                  Quick Actions
+                </div>
+              </button>
+
+              {/* Quick Actions Dropdown */}
+              {showQuickActions && (
+                <div className={`absolute top-full right-0 mt-2 w-80 sm:w-72 xs:w-64 rounded-xl shadow-2xl border ${
+                  darkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'
+                } overflow-hidden z-50`}>
+                  <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                    <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      ⚡ Quick Actions
+                    </h3>
+                  </div>
+                  <div className="p-3 max-h-80 overflow-y-auto">
+                    <div className="grid grid-cols-2 gap-2">
+                      {quickActions.slice(0, 6).map((action) => (
+                        <a
+                          key={action.id}
+                          href={action.href}
+                          className={`flex flex-col items-center p-4 rounded-xl transition-all duration-300 group hover:scale-105 ${
+                            darkMode ? 'hover:bg-gray-800/80' : 'hover:bg-gray-50'
+                          }`}
+                          onClick={() => setShowQuickActions(false)}
+                        >
+                          <div className="p-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110 mb-2">
+                            <action.icon className="w-5 h-5" />
+                          </div>
+                          <span className={`text-xs font-medium text-center ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                            {action.label}
+                          </span>
+                        </a>
+                      ))}
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                      <button 
+                        onClick={() => {
+                          setShowQuickActions(false);
+                          setShowCommandPalette(true);
+                        }}
+                        className={`w-full text-sm py-2 rounded-lg transition-colors ${
+                          darkMode ? 'text-blue-400 hover:text-blue-300 hover:bg-gray-800' : 'text-blue-600 hover:text-blue-700 hover:bg-gray-50'
+                        } font-medium`}
+                      >
+                        View all actions (Ctrl+K)
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Fullscreen Toggle */}
             <button
               onClick={toggleFullscreen}
@@ -254,8 +381,9 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({
             </button>
 
             {/* Messages */}
-            <div className="relative">
+            <div ref={messagesRef} className="relative">
               <button
+                onClick={() => setShowMessages(!showMessages)}
                 className={`p-2 rounded-lg transition-all duration-200 hover:scale-110 relative group ${
                   darkMode 
                     ? 'text-gray-300 hover:text-white hover:bg-gray-800' 
@@ -264,14 +392,76 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({
                 title="Messages"
               >
                 <MessageCircle className="w-5 h-5" />
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs rounded-full flex items-center justify-center font-bold animate-pulse">
-                  3
-                </div>
+                {unreadMessages > 0 && (
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs rounded-full flex items-center justify-center font-bold animate-pulse">
+                    {unreadMessages}
+                  </div>
+                )}
                 {/* Modern tooltip */}
                 <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium text-white bg-gray-900 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-                  3 new messages
+                  {unreadMessages} new messages
                 </div>
               </button>
+
+              {/* Messages Dropdown */}
+              {showMessages && (
+                <div className={`absolute top-full right-0 mt-2 w-96 sm:w-80 xs:w-72 rounded-xl shadow-2xl border ${
+                  darkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'
+                } overflow-hidden z-50`}>
+                  <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center justify-between">
+                      <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        Messages
+                      </h3>
+                      <span className={`text-sm px-2 py-1 rounded-full ${
+                        darkMode ? 'bg-green-900/20 text-green-400' : 'bg-green-100 text-green-600'
+                      }`}>
+                        {unreadMessages} new
+                      </span>
+                    </div>
+                  </div>
+                  <div className="max-h-80 overflow-y-auto">
+                    {messages.map((message) => (
+                      <div
+                        key={message.id}
+                        className={`p-4 border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer ${
+                          !message.read ? 'bg-green-50/50 dark:bg-green-900/10' : ''
+                        }`}
+                      >
+                        <div className="flex items-start space-x-3">
+                          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-medium text-sm">
+                            {message.avatar}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <p className={`font-medium text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                {message.sender}
+                              </p>
+                              <p className="text-xs text-gray-500">{message.time}</p>
+                            </div>
+                            <p className={`text-sm font-medium mt-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                              {message.subject}
+                            </p>
+                            <p className={`text-sm mt-1 truncate ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                              {message.preview}
+                            </p>
+                            {!message.read && (
+                              <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="p-3 border-t border-gray-200 dark:border-gray-700">
+                    <button className={`text-sm w-full text-center py-2 rounded-lg transition-colors ${
+                      darkMode ? 'text-blue-400 hover:text-blue-300 hover:bg-gray-800' : 'text-blue-600 hover:text-blue-700 hover:bg-gray-50'
+                    } font-medium`}>
+                      View all messages
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Notifications */}
