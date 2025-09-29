@@ -73,10 +73,16 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [isMounted, setIsMounted] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   
   const notificationRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
+
+  // Mount check for hydration
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // System time update
   useEffect(() => {
@@ -227,7 +233,7 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({
             }`}>
               <Clock className="w-4 h-4" />
               <span className="text-sm font-medium">
-                {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                {isMounted ? currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--'}
               </span>
             </div>
 
