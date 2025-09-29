@@ -606,7 +606,7 @@ export default function AdminDashboard() {
         className={`fixed inset-y-0 left-0 z-30 transform transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] lg:translate-x-0 flex flex-col group ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } ${
-          sidebarOpen ? 'w-60' : 'lg:w-14 lg:hover:w-60'
+          sidebarOpen ? 'w-60' : 'lg:w-20 lg:hover:w-60'
         }`}
         onMouseEnter={() => {
           if (!sidebarOpen) {
@@ -708,7 +708,7 @@ export default function AdminDashboard() {
         <nav className="flex-1 overflow-y-auto px-2 py-2 vuexy-scrollbar">
           {/* Collapsed State - Icon Representatives */}
           {!sidebarOpen && !sidebarHovered && (
-            <div className="hidden lg:flex flex-col space-y-2 px-1">
+            <div className="lg:flex flex-col space-y-1 px-2">
               {sidebarItems.map((section, sectionIndex) => (
                 <div key={`collapsed-${sectionIndex}`} className="space-y-2">
                   {/* Section Divider */}
@@ -1022,7 +1022,7 @@ export default function AdminDashboard() {
       )}
 
       {/* 🎯 Main Content Area */}
-      <div className={`transition-all duration-500 ${sidebarOpen || sidebarHovered ? 'lg:ml-60' : 'lg:ml-14'}`}>
+      <div className={`transition-all duration-500 ${sidebarOpen || sidebarHovered ? 'lg:ml-60' : 'lg:ml-20'}`}>
         <main className={`relative z-0 ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
           {/* 🎯 Dashboard Content */}
           <div className="pt-20 p-4 sm:p-6">
