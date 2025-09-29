@@ -26,16 +26,11 @@ export const adminMenuConfig: AdminMenuSection[] = [
   {
     title: 'Dashboard',
     items: [
-      { 
-        name: 'Overview', 
-        icon: LayoutDashboard, 
-        href: '/admin/dashboard', 
-        active: true 
-      },
-      { 
-        name: 'Analytics', 
-        icon: BarChart3, 
-        href: '/admin/analytics' 
+      {
+        name: 'Overview',
+        icon: LayoutDashboard,
+        href: '/admin/dashboard',
+        active: true
       },
     ]
   },
