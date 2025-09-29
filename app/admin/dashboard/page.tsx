@@ -678,32 +678,6 @@ export default function AdminDashboard() {
           </button>
         </div>
 
-        {/* 🔍 Premium Search Bar */}
-        <div className={`transition-all duration-500 overflow-hidden ${
-          sidebarOpen || sidebarHovered ? 'p-4 opacity-100' : 'lg:hidden'
-        }`}>
-          <button
-            onClick={() => setShowSearchModal(true)}
-            className={`w-full flex items-center px-4 py-3 rounded-xl border transition-all duration-500 group shadow-sm ${
-              darkMode 
-                ? 'bg-gray-700/30 border-gray-600/40 text-gray-300 hover:bg-gray-600/40 hover:border-gray-500/50'
-                : 'bg-white/30 border-slate-200/40 text-slate-700 hover:bg-white/50 hover:border-slate-300/50'
-            }`}
-          >
-            <Search className={`w-4 h-4 mr-3 transition-colors ${
-              darkMode ? 'group-hover:text-gray-100' : 'group-hover:text-gray-900'
-            }`} />
-            <span className={`text-sm font-medium transition-all duration-500 whitespace-nowrap overflow-hidden ${
-              sidebarOpen || sidebarHovered ? 'opacity-100 w-auto ml-3' : 'lg:opacity-0 lg:w-0 lg:ml-0'
-            }`}>Search...</span>
-            <div className={`px-2 py-1 rounded-md text-xs font-medium transition-all duration-500 overflow-hidden ${
-              darkMode ? 'bg-gray-600/60 text-gray-300' : 'bg-gray-100/60 text-gray-600'
-            } ${
-              sidebarOpen || sidebarHovered ? 'opacity-100 ml-auto' : 'lg:opacity-0 lg:w-0 lg:ml-0'
-            }`}>⌘K</div>
-          </button>
-        </div>
-
         {/* 🎨 Premium Navigation */}
         <nav className="flex-1 px-2 py-2">
           {/* Collapsed State - Icon Representatives */}
@@ -1292,3 +1266,7 @@ export default function AdminDashboard() {
     </div>
   );
 }
+
+
+
+
