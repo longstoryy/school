@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import AdminNavbar from '@/components/admin/AdminNavbar';
 import AdminSidebar from '@/components/admin/AdminSidebar';
+import AddStudentModal from '@/components/admin/AddStudentModal';
 import { useTheme } from '@/hooks/useTheme';
 import { CACHED_STUDENTS, searchStudents, filterStudentsByStatus, type Student } from '@/lib/studentsCache';
 
@@ -20,6 +21,7 @@ export default function StudentsPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarHovered, setSidebarHovered] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
   const router = useRouter();
   const { darkMode, toggleDarkMode } = useTheme();
 
@@ -52,6 +54,40 @@ export default function StudentsPage() {
 
   const handleSidebarToggle = () => {
     setSidebarOpen(!sidebarOpen);
+  };
+
+  const handleAddStudent = async (studentData: any) => {
+    try {
+      // Generate a new student ID
+      const newStudent: Student = {
+        id: `STU${Date.now()}`,
+        student_id: `STU${String(students.length + 1).padStart(3, '0')}`,
+        full_name: `${studentData.first_name} ${studentData.last_name}`,
+        first_name: studentData.first_name,
+        last_name: studentData.last_name,
+        email: studentData.email,
+        phone_number: studentData.phone_number,
+        current_class: studentData.current_class,
+        section: studentData.section,
+        status: studentData.status,
+        admission_date: studentData.admission_date,
+        age: studentData.date_of_birth ? new Date().getFullYear() - new Date(studentData.date_of_birth).getFullYear() : 0,
+        is_active: studentData.status === 'active'
+      };
+
+      // Add to current students list
+      setStudents(prev => [newStudent, ...prev]);
+      
+      // TODO: Send to backend API
+      console.log('New student added:', newStudent);
+      
+      // Show success message
+      alert('Student added successfully!');
+      
+    } catch (error) {
+      console.error('Error adding student:', error);
+      alert('Error adding student. Please try again.');
+    }
   };
 
   const getStatusBadge = (status: string, isActive: boolean) => {
@@ -157,7 +193,10 @@ export default function StudentsPage() {
                     <Upload className="w-4 h-4 mr-2" />
                     Import
                   </button>
-                  <button className="inline-flex items-center px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-200 hover:scale-105">
+                  <button 
+                    onClick={() => setShowAddModal(true)}
+                    className="inline-flex items-center px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-200 hover:scale-105"
+                  >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Student
                   </button>
@@ -313,6 +352,14 @@ export default function StudentsPage() {
           </div>
         </main>
       </div>
+
+      {/* Add Student Modal */}
+      <AddStudentModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSave={handleAddStudent}
+        darkMode={darkMode}
+      />
     </div>
   );
 }
