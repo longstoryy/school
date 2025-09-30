@@ -1,11 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  images: {
-    domains: ['localhost'],
-  },
-  // Server Actions are enabled by default in Next.js 14.1.0+
-  // Environment variables available on the server-side
+  // Environment variables for runtime
   env: {
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET || 'your-secret-key',
     NEXTAUTH_URL: process.env.NEXTAUTH_URL || 'http://localhost:3000',
@@ -14,24 +9,41 @@ const nextConfig = {
   },
   // For Docker support
   output: 'standalone',
-  // Handle CORS for API routes
-  async headers() {
-    return [
-      {
-        // matching all API routes
-        source: "/api/:path*",
-        headers: [
-          { key: "Access-Control-Allow-Credentials", value: "true" },
-          { key: "Access-Control-Allow-Origin", value: "*" },
-          { key: "Access-Control-Allow-Methods", value: "GET,OPTIONS,PATCH,DELETE,POST,PUT" },
-          { key: "Access-Control-Allow-Headers", value: "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version" },
-        ]
-      }
-    ]
+  // Enable strict mode for better performance
+  reactStrictMode: true,
+  // Enable SWC minification for better performance
+  swcMinify: true,
+  // Optimize images
+  images: {
+    domains: ['localhost', '127.0.0.1'],
+    unoptimized: true
   },
-  // Webpack configuration
-  webpack: (config, { isServer }) => {
-    // Important: return the modified config
+  // Performance optimizations
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  // Experimental features for better performance
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: ['lucide-react', '@headlessui/react'],
+    turbo: {
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
+    },
+  },
+  // Webpack optimizations
+  webpack: (config, { dev, isServer }) => {
+    if (!dev && !isServer) {
+      // Reduce bundle size in production
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@': require('path').resolve(__dirname),
+      };
+    }
     return config;
   },
 };

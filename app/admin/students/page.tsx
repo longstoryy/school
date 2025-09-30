@@ -99,7 +99,7 @@ export default function StudentsPage() {
         setTimeout(() => {
           setStudents(mockStudents);
           setLoading(false);
-        }, 1000);
+        }, 200); // Reduced from 1000ms to 200ms for faster loading
         return;
       }
 
@@ -180,20 +180,18 @@ export default function StudentsPage() {
     fetchStudents();
   }, [router]);
 
-  // Fetch students when search query changes
+  // Fetch students when search query changes - reduced debounce for faster response
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchStudents();
-    }, 500);
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
   const handleLogout = () => {
-    console.log('Logout clicked from sidebar!');
     localStorage.removeItem('user');
     localStorage.removeItem('token');
-    localStorage.removeItem('darkMode');
     router.push('/login');
   };
 

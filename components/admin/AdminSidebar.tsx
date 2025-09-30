@@ -458,14 +458,8 @@ export default function AdminSidebar({
               </div>
               <button
                 onClick={() => {
-                  console.log('Sidebar logout button clicked!', { onLogout: typeof onLogout });
                   if (window.confirm('Are you sure you want to logout?')) {
-                    console.log('User confirmed logout');
-                    if (onLogout) {
-                      onLogout();
-                    } else {
-                      console.error('onLogout function not provided!');
-                    }
+                    onLogout();
                   }
                 }}
                 className={`p-1.5 rounded-xl transition-all duration-200 hover:scale-110 flex-shrink-0 ml-2 group/logout ${
