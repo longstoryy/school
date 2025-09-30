@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   Users, Search, Plus, Filter, Download, Upload, Eye, Edit, Trash2,
@@ -10,22 +10,7 @@ import {
 import AdminNavbar from '@/components/admin/AdminNavbar';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import { useTheme } from '@/hooks/useTheme';
-
-interface Student {
-  id: string;
-  student_id: string;
-  full_name: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone_number: string;
-  current_class: string;
-  section: string;
-  status: string;
-  admission_date: string;
-  age: number;
-  is_active: boolean;
-}
+import { CACHED_STUDENTS, searchStudents, filterStudentsByStatus, type Student } from '@/lib/studentsCache';
 
 export default function StudentsPage() {
   const [user, setUser] = useState<any>(null);
@@ -38,142 +23,11 @@ export default function StudentsPage() {
   const router = useRouter();
   const { darkMode, toggleDarkMode } = useTheme();
 
-  // Fetch students from API
-  const fetchStudents = async () => {
-    setLoading(true);
-    try {
-      // Try to get token from user object in localStorage
-      const userData = localStorage.getItem('user');
-      const token = userData ? JSON.parse(userData).token : null;
-      
-      console.log('Token found:', token ? 'Yes' : 'No');
-      console.log('User data:', userData ? 'Found' : 'Not found');
-      
-      if (!token) {
-        // For demo purposes, use mock data if no token
-        const mockStudents: Student[] = [
-          {
-            id: '1',
-            student_id: 'STU001',
-            full_name: 'Emma Johnson',
-            first_name: 'Emma',
-            last_name: 'Johnson',
-            email: 'emma.johnson@student.school.com',
-            phone_number: '+447123456789',
-            current_class: 'Year 8',
-            section: 'A',
-            status: 'active',
-            admission_date: '2023-09-01',
-            age: 13,
-            is_active: true
-          },
-          {
-            id: '2',
-            student_id: 'STU002',
-            full_name: 'James Smith',
-            first_name: 'James',
-            last_name: 'Smith',
-            email: 'james.smith@student.school.com',
-            phone_number: '+447234567890',
-            current_class: 'Year 9',
-            section: 'B',
-            status: 'active',
-            admission_date: '2022-09-01',
-            age: 14,
-            is_active: true
-          },
-          {
-            id: '3',
-            student_id: 'STU003',
-            full_name: 'Olivia Brown',
-            first_name: 'Olivia',
-            last_name: 'Brown',
-            email: 'olivia.brown@student.school.com',
-            phone_number: '+447345678901',
-            current_class: 'Year 7',
-            section: 'A',
-            status: 'active',
-            admission_date: '2024-09-01',
-            age: 12,
-            is_active: true
-          }
-        ];
-        setTimeout(() => {
-          setStudents(mockStudents);
-          setLoading(false);
-        }, 200); // Reduced from 1000ms to 200ms for faster loading
-        return;
-      }
-
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-      let url = `${apiUrl}/api/students/`;
-      
-      if (searchQuery) {
-        url += `?search=${encodeURIComponent(searchQuery)}`;
-      }
-
-      console.log('Making API call to:', url);
-      console.log('Using token:', token?.substring(0, 20) + '...');
-      
-      const response = await fetch(url, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      console.log('API Response status:', response.status);
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('API Success - Students received:', data.length || data.results?.length || 0);
-        setStudents(data.results || data);
-      } else if (response.status === 401) {
-        console.log('401 Unauthorized - Token may be invalid or expired');
-        // Fallback to mock data if unauthorized
-        const mockStudents: Student[] = [
-          {
-            id: '1',
-            student_id: 'STU001',
-            full_name: 'John Doe',
-            first_name: 'John',
-            last_name: 'Doe',
-            email: 'john.doe@student.school.com',
-            phone_number: '+447123456789',
-            current_class: 'Year 10',
-            section: 'A',
-            status: 'active',
-            admission_date: '2023-01-01',
-            age: 15,
-            is_active: true
-          }
-        ];
-        setStudents(mockStudents);
-      }
-    } catch (error) {
-      console.error('Error fetching students:', error);
-      // Fallback to mock data on error
-      const mockStudents: Student[] = [
-        {
-          id: '1',
-          student_id: 'STU001',
-          full_name: 'John Doe',
-          first_name: 'John',
-          last_name: 'Doe',
-          email: 'john.doe@student.school.com',
-          phone_number: '+447123456789',
-          current_class: 'Year 10',
-          section: 'A',
-          status: 'active',
-          admission_date: '2023-01-01',
-          age: 15,
-          is_active: true
-        }
-      ];
-      setStudents(mockStudents);
-    } finally {
-      setLoading(false);
-    }
+  // Lightning fast student loading - no API delays
+  const loadStudents = () => {
+    // Instant loading from cache - no delays, no loading states
+    setStudents(CACHED_STUDENTS);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -186,17 +40,9 @@ export default function StudentsPage() {
       return;
     }
     
-    fetchStudents();
+    // Instant loading - no delays
+    loadStudents();
   }, [router]);
-
-  // Fetch students when search query changes - reduced debounce for faster response
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchStudents();
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
 
   const handleLogout = () => {
     localStorage.removeItem('user');
@@ -239,13 +85,20 @@ export default function StudentsPage() {
     );
   };
 
-  const filteredStudents = students.filter(student => {
-    const matchesSearch = student.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         student.student_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         student.email.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || student.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  // Lightning fast filtering with memoization - no re-computation unless needed
+  const filteredStudents = useMemo(() => {
+    let result = students;
+    
+    // Apply search filter
+    if (searchQuery.trim()) {
+      result = searchStudents(result, searchQuery);
+    }
+    
+    // Apply status filter
+    result = filterStudentsByStatus(result, statusFilter);
+    
+    return result;
+  }, [students, searchQuery, statusFilter]);
 
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
