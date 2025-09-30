@@ -92,11 +92,11 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({
     setIsMounted(true);
   }, []);
 
-  // System time update
+  // System time update - only update every minute to reduce re-renders
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
-    }, 1000);
+    }, 60000); // Update every minute instead of every second
     return () => clearInterval(timer);
   }, []);
 
