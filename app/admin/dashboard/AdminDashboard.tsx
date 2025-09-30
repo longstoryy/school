@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import AdminNavbar from '@/components/admin/AdminNavbar';
 import AdminSidebar from '@/components/admin/AdminSidebar';
+import { useTheme } from '@/hooks/useTheme';
 
 // 🎯 Premium Enterprise TypeScript Interfaces
 interface DashboardStats {
@@ -173,9 +174,11 @@ StatsCard.displayName = 'StatsCard';
 export default function AdminDashboard() {
   const [user, setUser] = useState<any>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  
+  // Use the theme hook
+  const { darkMode, toggleDarkMode } = useTheme();
   const [sidebarHovered, setSidebarHovered] = useState(false);
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
-  const [darkMode, setDarkMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [expandedSections, setExpandedSections] = useState<{[key: string]: boolean}>({});
@@ -215,13 +218,7 @@ export default function AdminDashboard() {
     setShowSearchModal(prev => !prev);
   }, []);
 
-  const handleDarkModeToggle = useCallback(() => {
-    setDarkMode(prev => {
-      const newMode = !prev;
-      localStorage.setItem('darkMode', newMode.toString());
-      return newMode;
-    });
-  }, []);
+  // Dark mode is now handled by useTheme hook
 
   // 🎨 Memoized Quick Actions
   const quickActions = useMemo<QuickAction[]>(() => [
@@ -311,9 +308,7 @@ export default function AdminDashboard() {
         return;
       }
 
-      // 🌙 Initialize Dark Mode
-      const savedDarkMode = localStorage.getItem('darkMode') === 'true';
-      setDarkMode(savedDarkMode);
+      // Dark mode is now handled by useTheme hook
 
       // ⚡ Simulate premium loading experience
       await new Promise(resolve => setTimeout(resolve, 800));
@@ -337,7 +332,7 @@ export default function AdminDashboard() {
       // Dark Mode Toggle - Ctrl/Cmd + D
       if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
         e.preventDefault();
-        handleDarkModeToggle();
+        toggleDarkMode();
       }
       // Close Modals - Escape
       if (e.key === 'Escape') {
@@ -368,7 +363,7 @@ export default function AdminDashboard() {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [router, handleSearchToggle, handleSidebarToggle, handleDarkModeToggle, showAddMenu]);
+  }, [router, handleSearchToggle, handleSidebarToggle, toggleDarkMode, showAddMenu]);
 
   const handleLogout = () => {
     localStorage.removeItem('user');
@@ -594,7 +589,7 @@ export default function AdminDashboard() {
       {/* 🎨 Admin Navigation */}
       <AdminNavbar
         darkMode={darkMode}
-        onDarkModeToggle={handleDarkModeToggle}
+        onDarkModeToggle={toggleDarkMode}
         user={user}
         onLogout={handleLogout}
         onSidebarToggle={handleSidebarToggle}
