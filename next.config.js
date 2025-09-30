@@ -35,7 +35,6 @@ const nextConfig = {
       },
     },
     // Enable faster navigation
-    appDir: true,
     serverComponentsExternalPackages: [],
   },
   // Webpack optimizations

@@ -168,14 +168,14 @@ export default function AdminSidebar({
                   <div key={`collapsed-item-${itemIndex}`} className="relative group">
                     <Link
                       href={item.href}
-                      className={`icon-representative w-full p-2 rounded-xl transition-all duration-300 flex items-center justify-center group/icon relative overflow-hidden border transform hover:scale-105 active:scale-95 ${
+                      className={`icon-representative w-full p-2 rounded-xl transition-all duration-300 flex items-center justify-center group/icon relative overflow-hidden transform hover:scale-105 active:scale-95 ${
                         isItemActive(item) || hasActiveSubmenu(item)
                           ? darkMode
-                            ? 'bg-gradient-to-br from-blue-500/30 to-purple-600/30 text-blue-300 shadow-xl border-blue-400/60 animate-pulse'
-                            : 'bg-gradient-to-br from-blue-500/20 to-purple-600/20 text-blue-700 shadow-xl border-blue-400/60 animate-pulse'
+                            ? 'bg-gradient-to-br from-blue-500/30 to-purple-600/30 text-blue-300 shadow-xl animate-pulse'
+                            : 'bg-gradient-to-br from-blue-500/20 to-purple-600/20 text-blue-700 shadow-xl animate-pulse'
                           : darkMode
-                            ? 'text-gray-300 hover:text-white hover:bg-gradient-to-br hover:from-gray-700/40 hover:to-gray-600/40 hover:shadow-lg border-transparent hover:border-gray-500/50'
-                            : 'text-slate-600 hover:text-slate-800 hover:bg-gradient-to-br hover:from-white/60 hover:to-gray-50/60 hover:shadow-lg border-transparent hover:border-gray-400/60'
+                            ? 'text-gray-300 hover:text-white hover:bg-gradient-to-br hover:from-gray-700/40 hover:to-gray-600/40 hover:shadow-lg'
+                            : 'text-slate-600 hover:text-slate-800 hover:bg-gradient-to-br hover:from-white/60 hover:to-gray-50/60 hover:shadow-lg'
                       }`}
                       title={item.name}
                       onMouseEnter={(e) => {
@@ -270,8 +270,8 @@ export default function AdminSidebar({
                           className={`premium-menu-item flex items-center flex-1 px-3 py-2.5 rounded-lg transition-all duration-300 group/item relative overflow-hidden hover:translate-x-2 transform hover:scale-[1.02] active:scale-[0.98] ${
                             isItemActive(item) || hasActiveSubmenu(item)
                               ? darkMode
-                                ? 'bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-blue-300 shadow-lg border border-blue-400/40'
-                                : 'bg-gradient-to-r from-blue-500/10 to-purple-600/10 text-blue-700 shadow-lg border border-blue-400/30'
+                                ? 'bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-blue-300 shadow-lg'
+                                : 'bg-gradient-to-r from-blue-500/10 to-purple-600/10 text-blue-700 shadow-lg'
                               : darkMode
                                 ? 'text-gray-300 hover:text-white hover:bg-gray-700/40'
                                 : 'text-slate-600 hover:text-slate-800 hover:bg-white/40'
@@ -369,11 +369,11 @@ export default function AdminSidebar({
                               className={`flex items-center px-3 py-2 rounded-lg text-sm transition-all duration-300 group/sub relative overflow-hidden ${
                                 isItemActive(subItem)
                                   ? darkMode 
-                                    ? 'text-blue-400 bg-gradient-to-r from-blue-500/15 to-purple-500/15 border-l-2 border-blue-400 shadow-md' 
-                                    : 'text-blue-600 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-l-2 border-blue-600 shadow-md'
+                                    ? 'text-blue-400 bg-gradient-to-r from-blue-500/15 to-purple-500/15 shadow-md' 
+                                    : 'text-blue-600 bg-gradient-to-r from-blue-500/10 to-purple-500/10 shadow-md'
                                   : darkMode
-                                    ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30 border-l-2 border-transparent hover:border-gray-500'
-                                    : 'text-slate-500 hover:text-slate-700 hover:bg-white/30 border-l-2 border-transparent hover:border-slate-300'
+                                    ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30'
+                                    : 'text-slate-500 hover:text-slate-700 hover:bg-white/30'
                               } ${sidebarOpen || sidebarHovered ? 'space-x-2' : 'justify-center'}`}
                             >
                               {/* Submenu hover effect */}
