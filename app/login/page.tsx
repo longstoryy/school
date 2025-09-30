@@ -68,13 +68,16 @@ export default function LoginPage() {
         // Get user type and redirect accordingly
         const userType = data.user?.user_type?.toLowerCase();
         
-        // Store user info in localStorage for dashboard use
+        // Store user info and token in localStorage for dashboard use
         localStorage.setItem('user', JSON.stringify({
           email: data.user.email,
           name: `${data.user.first_name} ${data.user.last_name}`,
           user_type: data.user.user_type,
           token: data.access
         }));
+        
+        // Also store token separately for API calls
+        localStorage.setItem('token', data.access);
 
         // Redirect based on user type
         switch (userType) {

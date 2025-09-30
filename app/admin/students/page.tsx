@@ -35,17 +35,19 @@ export default function StudentsPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarHovered, setSidebarHovered] = useState(false);
-  
   const router = useRouter();
   const { darkMode, toggleDarkMode } = useTheme();
 
   // Fetch students from API
   const fetchStudents = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      // Get token from user object in localStorage
+      // Try to get token from user object in localStorage
       const userData = localStorage.getItem('user');
       const token = userData ? JSON.parse(userData).token : null;
+      
+      console.log('Token found:', token ? 'Yes' : 'No');
+      console.log('User data:', userData ? 'Found' : 'Not found');
       
       if (!token) {
         // For demo purposes, use mock data if no token
@@ -110,6 +112,9 @@ export default function StudentsPage() {
         url += `?search=${encodeURIComponent(searchQuery)}`;
       }
 
+      console.log('Making API call to:', url);
+      console.log('Using token:', token?.substring(0, 20) + '...');
+      
       const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -117,10 +122,14 @@ export default function StudentsPage() {
         },
       });
 
+      console.log('API Response status:', response.status);
+
       if (response.ok) {
         const data = await response.json();
+        console.log('API Success - Students received:', data.length || data.results?.length || 0);
         setStudents(data.results || data);
       } else if (response.status === 401) {
+        console.log('401 Unauthorized - Token may be invalid or expired');
         // Fallback to mock data if unauthorized
         const mockStudents: Student[] = [
           {
