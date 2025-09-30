@@ -52,7 +52,8 @@ export default function LoginPage() {
 
     try {
       // First try Django API authentication
-      const response = await fetch('http://localhost:8000/api/auth/token/', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${apiUrl}/api/auth/token/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

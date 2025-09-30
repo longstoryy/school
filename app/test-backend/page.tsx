@@ -6,20 +6,32 @@ export default function TestBackend() {
   const [result, setResult] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const testBackend = async () => {
+  const testConnection = async () => {
     setLoading(true);
-    setResult('Testing...');
-    
     try {
-      // Test internal backend connection
-      const response = await fetch('/api/test-backend');
-      const data = await response.json();
-      setResult(JSON.stringify(data, null, 2));
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${apiUrl}/api/auth/token/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: 'admin@school.com',
+          password: 'admin123'
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setResult(`✅ SUCCESS!\n\n${JSON.stringify(data, null, 2)}`);
+      } else {
+        const errorData = await response.text();
+        setResult(`❌ ERROR ${response.status}:\n\n${errorData}`);
+      }
     } catch (error) {
-      setResult(`Error: ${error}`);
-    } finally {
-      setLoading(false);
+      setResult(`❌ NETWORK ERROR: ${error}`);
     }
+    setLoading(false);
   };
 
   const testAuth = async () => {

@@ -103,7 +103,8 @@ export default function StudentsPage() {
         return;
       }
 
-      let url = `http://localhost:8000/api/students/`;
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      let url = `${apiUrl}/api/students/`;
       
       if (searchQuery) {
         url += `?search=${encodeURIComponent(searchQuery)}`;
