@@ -457,15 +457,19 @@ export default function AdminSidebar({
                 </p>
               </div>
               <button
-                onClick={onLogout}
-                className={`p-1.5 rounded-xl transition-all duration-200 hover:scale-110 flex-shrink-0 ml-2 ${
+                onClick={() => {
+                  if (window.confirm('Are you sure you want to logout?')) {
+                    onLogout();
+                  }
+                }}
+                className={`p-1.5 rounded-xl transition-all duration-200 hover:scale-110 flex-shrink-0 ml-2 group/logout ${
                   darkMode
-                    ? 'bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300'
-                    : 'bg-red-500/10 hover:bg-red-500/20 text-red-600 hover:text-red-700'
+                    ? 'bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 border border-red-500/30 hover:border-red-500/50'
+                    : 'bg-red-500/10 hover:bg-red-500/20 text-red-600 hover:text-red-700 border border-red-500/20 hover:border-red-500/40'
                 }`}
                 title="Logout"
               >
-                <LogOut className="w-3.5 h-3.5" />
+                <LogOut className="w-3.5 h-3.5 group-hover/logout:rotate-12 transition-transform duration-200" />
               </button>
             </div>
           </div>
