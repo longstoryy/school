@@ -189,8 +189,10 @@ export default function StudentsPage() {
   }, [searchQuery]);
 
   const handleLogout = () => {
+    console.log('Logout clicked from sidebar!');
     localStorage.removeItem('user');
     localStorage.removeItem('token');
+    localStorage.removeItem('darkMode');
     router.push('/login');
   };
 
