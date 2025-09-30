@@ -34,29 +34,32 @@ export default function TestBackend() {
     setLoading(false);
   };
 
-  const testAuth = async () => {
+  const testWrongCredentials = async () => {
     setLoading(true);
-    setResult('Testing authentication...');
-    
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/token/`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${apiUrl}/api/auth/token/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: 'test@example.com',
-          password: 'testpass123'
+          email: 'wrong@example.com',
+          password: 'wrongpass'
         }),
       });
       
-      const data = await response.json();
-      setResult(JSON.stringify(data, null, 2));
+      if (response.ok) {
+        const data = await response.json();
+        setResult(`❌ UNEXPECTED SUCCESS:\n\n${JSON.stringify(data, null, 2)}`);
+      } else {
+        const errorData = await response.text();
+        setResult(`✅ EXPECTED ERROR ${response.status}:\n\n${errorData}`);
+      }
     } catch (error) {
-      setResult(`Auth Error: ${error}`);
-    } finally {
-      setLoading(false);
+      setResult(`❌ NETWORK ERROR: ${error}`);
     }
+    setLoading(false);
   };
 
   return (
@@ -66,19 +69,19 @@ export default function TestBackend() {
         
         <div className="space-y-4 mb-8">
           <button
-            onClick={testBackend}
+            onClick={testConnection}
             disabled={loading}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
           >
-            Test Backend Health
+            {loading ? '🔄 Testing...' : '🚀 Test Backend Connection'}
           </button>
           
           <button
-            onClick={testAuth}
+            onClick={testWrongCredentials}
             disabled={loading}
-            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:opacity-50 ml-4"
+            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50 ml-4"
           >
-            Test Authentication
+            {loading ? '🔄 Testing...' : '❌ Test Wrong Credentials'}
           </button>
         </div>
         
