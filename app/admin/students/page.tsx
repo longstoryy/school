@@ -14,6 +14,7 @@ import AddStudentModal from '@/components/admin/AddStudentModal';
 import ViewStudentModal from '@/components/admin/ViewStudentModal';
 import EditStudentModal from '@/components/admin/EditStudentModal';
 import { useTheme } from '@/hooks/useTheme';
+import { useToast } from '@/hooks/useToast';
 import { CACHED_STUDENTS, searchStudents, filterStudentsByStatus, type Student } from '@/lib/studentsCache';
 
 export default function StudentsPage() {
@@ -33,6 +34,7 @@ export default function StudentsPage() {
   const [itemsPerPage] = useState(6);
   const router = useRouter();
   const { darkMode, toggleDarkMode } = useTheme();
+  const { toast } = useToast();
 
   // Lightning fast student loading - no API delays
   const loadStudents = () => {
@@ -67,35 +69,57 @@ export default function StudentsPage() {
 
   const handleAddStudent = async (studentData: any) => {
     try {
-      // Generate a new student ID
+      // Send to backend API
+      const response = await fetch('/api/students', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(studentData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create student');
+      }
+
+      const result = await response.json();
+      console.log('Student created successfully:', result);
+
+      // Create a Student object for the UI (mapping from Django API response)
       const newStudent: Student = {
-        id: `STU${Date.now()}`,
-        student_id: `STU${String(students.length + 1).padStart(3, '0')}`,
-        full_name: `${studentData.first_name} ${studentData.last_name}`,
-        first_name: studentData.first_name,
-        last_name: studentData.last_name,
-        email: studentData.email,
-        phone_number: studentData.phone_number,
-        current_class: studentData.current_class,
-        section: studentData.section,
-        status: studentData.status,
-        admission_date: studentData.admission_date,
-        age: studentData.date_of_birth ? new Date().getFullYear() - new Date(studentData.date_of_birth).getFullYear() : 0,
-        is_active: studentData.status === 'active'
+        id: result.student.id,
+        student_id: result.student.student_id || `STU${String(students.length + 1).padStart(3, '0')}`,
+        full_name: result.student.full_name || `${result.student.first_name} ${result.student.last_name}`,
+        first_name: result.student.first_name,
+        last_name: result.student.last_name,
+        email: result.student.email || '',
+        phone_number: result.student.phone_number || '',
+        current_class: result.student.current_class || '',
+        section: result.student.section || '',
+        status: result.student.status || 'active',
+        admission_date: result.student.admission_date || new Date().toISOString().split('T')[0],
+        age: result.student.age || (result.student.date_of_birth ? new Date().getFullYear() - new Date(result.student.date_of_birth).getFullYear() : 0),
+        is_active: result.student.is_active !== undefined ? result.student.is_active : true
       };
 
       // Add to current students list
       setStudents(prev => [newStudent, ...prev]);
       
-      // TODO: Send to backend API
-      console.log('New student added:', newStudent);
-      
-      // Show success message
-      alert('Student added successfully!');
+      // Show success message with default password info
+      toast({
+        title: "Student Added Successfully!",
+        description: `Default login - Email: ${result.student.email || 'N/A'}, Password: ${result.defaultPassword}`,
+        variant: "default"
+      });
       
     } catch (error) {
       console.error('Error adding student:', error);
-      alert('Error adding student. Please try again.');
+      toast({
+        title: "Error Adding Student",
+        description: error instanceof Error ? error.message : 'Please try again.',
+        variant: "destructive"
+      });
     }
   };
 
