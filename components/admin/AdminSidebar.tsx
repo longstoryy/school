@@ -81,7 +81,7 @@ export default function AdminSidebar({
   return (
     <div 
       data-admin-sidebar
-      className={`fixed inset-y-0 left-0 z-30 transform transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] lg:translate-x-0 flex flex-col group ${
+      className={`fixed inset-y-0 left-0 z-30 transform transition-all duration-500 ease-in-out lg:translate-x-0 flex flex-col group ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       } ${
         sidebarOpen ? 'w-60' : sidebarHovered ? 'lg:w-60' : 'lg:w-20'

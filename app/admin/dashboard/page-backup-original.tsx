@@ -519,7 +519,7 @@ export default function AdminDashboard() {
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
       {/* 🚀 Premium Enterprise Sidebar */}
       <div 
-        className={`fixed inset-y-0 left-0 z-40 transform transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] lg:translate-x-0 flex flex-col ${
+        className={`fixed inset-y-0 left-0 z-40 transform transition-all duration-500 ease-in-out lg:translate-x-0 flex flex-col ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } ${
           sidebarOpen ? 'w-80' : 'lg:w-20'
@@ -913,7 +913,7 @@ export default function AdminDashboard() {
           
           /* 🌟 Premium Menu Animations */
           .premium-menu-item {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease-in-out;
             transform-origin: left center;
           }
           
@@ -943,7 +943,7 @@ export default function AdminDashboard() {
           
           /* ✨ Premium Animations */
           .animate-fadeIn {
-            animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeIn 0.6s ease-in-out;
           }
           
           .animate-reverse-spin {

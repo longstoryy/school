@@ -813,7 +813,7 @@ export default function AdminDashboard() {
         /* Enhanced Icon Representative Animations */
         .icon-representative {
           transform: translateY(0) scale(1);
-          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          transition: all 0.4s ease-in-out;
           position: relative;
         }
         
