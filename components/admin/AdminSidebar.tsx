@@ -188,11 +188,11 @@ export default function AdminSidebar({
                       }}
                     >
                       {/* Gradient Border Animation */}
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 opacity-0 group-hover/icon:opacity-100 transition-opacity duration-500"></div>
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 opacity-0 group-hover/icon:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                       
                       {/* Sweet glow effect for active items */}
                       {(isItemActive(item) || hasActiveSubmenu(item)) && (
-                        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-pink-400/20 animate-pulse"></div>
+                        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-pink-400/20 animate-pulse pointer-events-none"></div>
                       )}
                       
                       <item.icon className="w-5 h-5 transition-all duration-300 group-hover/icon:scale-125 group-hover/icon:rotate-12 relative z-10 drop-shadow-sm" />
@@ -241,7 +241,7 @@ export default function AdminSidebar({
                 }}
               >
                 {/* Section header gradient effect */}
-                <div className="absolute inset-0 rounded-lg opacity-0 group-hover/section:opacity-100 transition-opacity duration-300"
+                <div className="absolute inset-0 rounded-lg opacity-0 group-hover/section:opacity-100 transition-opacity duration-300 pointer-events-none"
                   style={{
                     background: 'linear-gradient(90deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05))',
                   }}
@@ -294,7 +294,7 @@ export default function AdminSidebar({
                           }}
                         >
                           {/* 🌈 Animated Border Gradient */}
-                          <div className="absolute inset-0 rounded-lg opacity-0 group-hover/item:opacity-100 transition-opacity duration-500"
+                          <div className="absolute inset-0 rounded-lg opacity-0 group-hover/item:opacity-100 transition-opacity duration-500 pointer-events-none"
                             style={{
                               background: 'linear-gradient(90deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1))',
                             }}
@@ -302,7 +302,7 @@ export default function AdminSidebar({
                           
                           {/* Sweet active glow */}
                           {(isItemActive(item) || hasActiveSubmenu(item)) && (
-                            <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-blue-400/10 via-purple-400/10 to-pink-400/10 animate-pulse"></div>
+                            <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-blue-400/10 via-purple-400/10 to-pink-400/10 animate-pulse pointer-events-none"></div>
                           )}
                           <div className="flex items-center relative z-10 w-full">
                             {/* 🎯 Icon - Always Visible */}
@@ -377,7 +377,7 @@ export default function AdminSidebar({
                               } ${sidebarOpen || sidebarHovered ? 'space-x-2' : 'justify-center'}`}
                             >
                               {/* Submenu hover effect */}
-                              <div className="absolute inset-0 rounded-lg opacity-0 group-hover/sub:opacity-100 transition-opacity duration-300"
+                              <div className="absolute inset-0 rounded-lg opacity-0 group-hover/sub:opacity-100 transition-opacity duration-300 pointer-events-none"
                                 style={{
                                   background: 'linear-gradient(90deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05))',
                                 }}
@@ -426,7 +426,7 @@ export default function AdminSidebar({
           sidebarOpen || sidebarHovered ? 'p-3 space-x-3' : 'p-2 justify-center'
         }`}>
           {/* Profile hover effect */}
-          <div className="absolute inset-0 rounded-xl opacity-0 group-hover/profile:opacity-100 transition-opacity duration-300"
+          <div className="absolute inset-0 rounded-xl opacity-0 group-hover/profile:opacity-100 transition-opacity duration-300 pointer-events-none"
             style={{
               background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05))',
             }}
