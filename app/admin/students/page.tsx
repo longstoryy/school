@@ -62,9 +62,13 @@ export default function StudentsPage() {
         'Content-Type': 'application/json',
       };
       
-      // TEMPORARY: Skip authentication for testing
-      // TODO: Fix Django authentication setup later
-      console.log('LoadStudents - Attempting without authentication for testing');
+      // Add authentication header if token exists
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+        console.log('LoadStudents - Using authentication token');
+      } else {
+        console.log('LoadStudents - No token found, may need to login');
+      }
       
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/students/`, {
         headers
@@ -125,9 +129,13 @@ export default function StudentsPage() {
         'Content-Type': 'application/json',
       };
       
-      // TEMPORARY: Skip authentication for testing
-      // TODO: Fix Django authentication setup later
-      console.log('AddStudent - Attempting without authentication for testing');
+      // Add authentication header if token exists
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+        console.log('AddStudent - Using authentication token');
+      } else {
+        console.log('AddStudent - No token found, may need to login');
+      }
       
       // Send to Django backend API
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/students/`, {
