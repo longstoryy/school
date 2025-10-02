@@ -171,34 +171,24 @@ export default function AdminSidebar({
                       className={`icon-representative w-full p-2 rounded-xl transition-all duration-300 flex items-center justify-center group/icon relative overflow-hidden transform hover:scale-105 active:scale-95 ${
                         isItemActive(item) || hasActiveSubmenu(item)
                           ? darkMode
-                            ? 'bg-gradient-to-br from-blue-500/30 to-purple-600/30 text-blue-300 shadow-xl animate-pulse'
-                            : 'bg-gradient-to-br from-blue-500/20 to-purple-600/20 text-blue-700 shadow-xl animate-pulse'
+                            ? 'bg-gradient-to-br from-blue-500/30 to-purple-600/30 text-blue-300 shadow-lg'
+                            : 'bg-gradient-to-br from-blue-500/20 to-purple-600/20 text-blue-700 shadow-lg'
                           : darkMode
                             ? 'text-gray-300 hover:text-white hover:bg-gradient-to-br hover:from-gray-700/40 hover:to-gray-600/40 hover:shadow-lg'
                             : 'text-slate-600 hover:text-slate-800 hover:bg-gradient-to-br hover:from-white/60 hover:to-gray-50/60 hover:shadow-lg'
                       }`}
                       title={item.name}
-                      onMouseEnter={(e) => {
-                        // Sweet ripple effect on hover
-                        const button = e.currentTarget;
-                        const ripple = document.createElement('div');
-                        ripple.className = 'absolute inset-0 rounded-xl bg-gradient-to-r from-blue-400/30 via-purple-400/30 to-pink-400/30 animate-ping';
-                        button.appendChild(ripple);
-                        setTimeout(() => ripple.remove(), 600);
-                      }}
                     >
                       {/* Gradient Border Animation */}
                       <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 opacity-0 group-hover/icon:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                       
-                      {/* Sweet glow effect for active items */}
+                      {/* Clean active state */}
                       {(isItemActive(item) || hasActiveSubmenu(item)) && (
-                        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-pink-400/20 animate-pulse pointer-events-none"></div>
+                        <div className="absolute inset-0 rounded-xl bg-blue-500/20 pointer-events-none"></div>
                       )}
                       
-                      <item.icon className="w-5 h-5 transition-all duration-300 group-hover/icon:scale-125 group-hover/icon:rotate-12 relative z-10 drop-shadow-sm" />
+                      <item.icon className="w-5 h-5 transition-colors duration-200 relative z-10" />
                       
-                      {/* Sparkle effect on hover */}
-                      <div className="absolute top-0 right-0 w-2 h-2 bg-gradient-to-r from-yellow-400 to-pink-400 rounded-full opacity-0 group-hover/icon:opacity-100 group-hover/icon:animate-bounce transition-all duration-300 delay-100"></div>
                     </Link>
                   </div>
                 ))}
@@ -278,19 +268,6 @@ export default function AdminSidebar({
                           } ${sidebarOpen || sidebarHovered ? 'space-x-3' : 'justify-center'}`}
                           style={{
                             backdropFilter: (isItemActive(item) || hasActiveSubmenu(item)) ? 'blur(15px)' : 'none'
-                          }}
-                          onMouseEnter={(e) => {
-                            // Sweet success ripple effect
-                            const element = e.currentTarget;
-                            const rect = element.getBoundingClientRect();
-                            const ripple = document.createElement('div');
-                            ripple.className = 'absolute rounded-full bg-gradient-to-r from-green-400/40 via-blue-400/40 to-purple-400/40 animate-ping pointer-events-none';
-                            ripple.style.width = ripple.style.height = '20px';
-                            ripple.style.left = '10px';
-                            ripple.style.top = '50%';
-                            ripple.style.transform = 'translateY(-50%)';
-                            element.appendChild(ripple);
-                            setTimeout(() => ripple.remove(), 800);
                           }}
                         >
                           {/* 🌈 Animated Border Gradient */}

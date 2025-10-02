@@ -1,18 +1,50 @@
-// Fast students cache for instant loading
+// Comprehensive Student interface matching Django backend
 export interface Student {
+  // Core identification
   id: string;
   student_id: string;
   full_name: string;
   first_name: string;
   last_name: string;
+  
+  // Contact information
   email: string;
   phone_number: string;
+  phone_country_code?: string;
+  
+  // Personal details
+  date_of_birth?: string;
+  age: number;
+  gender?: string;
+  address?: string;
+  
+  // Academic information
   current_class: string;
   section: string;
-  status: string;
+  academic_year?: string;
   admission_date: string;
-  age: number;
+  admission_number?: string;
+  previous_school?: string;
+  
+  // Parent/Guardian information
+  parent_name?: string;
+  parent_phone?: string;
+  parent_email?: string;
+  guardian_type?: string;
+  father_name?: string;
+  mother_name?: string;
+  guardian_name?: string;
+  emergency_contact?: string;
+  
+  // Additional information
+  medical_info?: string;
+  notes?: string;
+  
+  // Status and metadata
+  status: string;
   is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
 }
 
 // Pre-cached students data for instant loading

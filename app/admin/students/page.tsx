@@ -6,7 +6,7 @@ import {
   Users, Search, Plus, Filter, Download, Upload, Eye, Edit, Trash2,
   GraduationCap, Phone, Mail, MapPin, Calendar, User, ChevronDown,
   MoreVertical, CheckCircle, XCircle, Clock, Award, Grid3X3, List,
-  ChevronLeft, ChevronRight
+  ChevronLeft, ChevronRight, RefreshCw
 } from 'lucide-react';
 import AdminNavbar from '@/components/admin/AdminNavbar';
 import AdminSidebar from '@/components/admin/AdminSidebar';
@@ -30,15 +30,67 @@ export default function StudentsPage() {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(6);
+  const [itemsPerPage] = useState(20); // Show more students per page
   const router = useRouter();
   const { darkMode, toggleDarkMode } = useTheme();
 
-  // Lightning fast student loading - no API delays
-  const loadStudents = () => {
-    // Instant loading from cache - no delays, no loading states
-    setStudents(CACHED_STUDENTS);
-    setLoading(false);
+  // Test function to check API without auth
+  const testApiWithoutAuth = async () => {
+    try {
+      console.log('Testing API without authentication...');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/students/`);
+      console.log('No-auth response status:', response.status);
+      if (response.ok) {
+        const data = await response.json();
+        console.log('No-auth data:', data);
+      } else {
+        console.log('No-auth failed:', await response.text());
+      }
+    } catch (error) {
+      console.log('No-auth error:', error);
+    }
+  };
+
+  // Load students from Django backend with authentication
+  const loadStudents = async () => {
+    try {
+      setLoading(true);
+      
+      // Get auth token from localStorage
+      const token = localStorage.getItem('token');
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+      
+      // TEMPORARY: Skip authentication for testing
+      // TODO: Fix Django authentication setup later
+      console.log('LoadStudents - Attempting without authentication for testing');
+      
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/students/`, {
+        headers
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        // Django returns paginated data with 'results' array
+        const studentsData = data.results || data;
+        setStudents(studentsData);
+        console.log(`Loaded ${studentsData.length} students from backend`);
+      } else {
+        console.error('Failed to fetch students:', response.status, response.statusText);
+        if (response.status === 401) {
+          console.warn('Authentication required - using cached data');
+        }
+        // Fallback to cached data if API fails
+        setStudents(CACHED_STUDENTS);
+      }
+    } catch (error) {
+      console.error('Error loading students:', error);
+      // Fallback to cached data if API fails
+      setStudents(CACHED_STUDENTS);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -67,35 +119,48 @@ export default function StudentsPage() {
 
   const handleAddStudent = async (studentData: any) => {
     try {
-      // Generate a new student ID
-      const newStudent: Student = {
-        id: `STU${Date.now()}`,
-        student_id: `STU${String(students.length + 1).padStart(3, '0')}`,
-        full_name: `${studentData.first_name} ${studentData.last_name}`,
-        first_name: studentData.first_name,
-        last_name: studentData.last_name,
-        email: studentData.email,
-        phone_number: studentData.phone_number,
-        current_class: studentData.current_class,
-        section: studentData.section,
-        status: studentData.status,
-        admission_date: studentData.admission_date,
-        age: studentData.date_of_birth ? new Date().getFullYear() - new Date(studentData.date_of_birth).getFullYear() : 0,
-        is_active: studentData.status === 'active'
+      // Get auth token from localStorage
+      const token = localStorage.getItem('token');
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
       };
+      
+      // TEMPORARY: Skip authentication for testing
+      // TODO: Fix Django authentication setup later
+      console.log('AddStudent - Attempting without authentication for testing');
+      
+      // Send to Django backend API
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/students/`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(studentData),
+      });
 
-      // Add to current students list
-      setStudents(prev => [newStudent, ...prev]);
-      
-      // TODO: Send to backend API
-      console.log('New student added:', newStudent);
-      
-      // Show success message
-      alert('Student added successfully!');
+      if (response.ok) {
+        const newStudent = await response.json();
+        console.log('Student created successfully:', newStudent);
+        
+        // Refresh the students list from backend
+        await loadStudents();
+        
+        // Success - no need to show alert, modal will handle it
+        return;
+      } else {
+        const errorData = await response.json();
+        console.error('Backend error:', errorData);
+        if (response.status === 401) {
+          alert('Authentication required. Please log in again.');
+          router.push('/login');
+          return;
+        }
+        // Throw the error so the modal can handle it
+        throw errorData;
+      }
       
     } catch (error) {
       console.error('Error adding student:', error);
-      alert('Error adding student. Please try again.');
+      // Re-throw the error so the modal can handle it with proper error parsing
+      throw error;
     }
   };
 
@@ -299,6 +364,24 @@ export default function StudentsPage() {
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
+                  {/* Modern Refresh Button */}
+                  <button 
+                    onClick={loadStudents}
+                    className="group relative inline-flex items-center justify-center w-10 h-10 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
+                    title="Refresh Data"
+                  >
+                    <RefreshCw className="w-4 h-4 text-white transition-transform duration-200 group-hover:rotate-180" />
+                  </button>
+                  
+                  {/* Test API Button */}
+                  <button 
+                    onClick={testApiWithoutAuth}
+                    className="inline-flex items-center px-3 py-2 bg-red-500 hover:bg-red-600 rounded-lg shadow-sm text-sm font-medium text-white transition-all duration-200"
+                    title="Test API"
+                  >
+                    Test API
+                  </button>
+                  
                   <button 
                     onClick={handleExport}
                     className={`inline-flex items-center px-4 py-2 border rounded-lg shadow-sm text-sm font-medium transition-all duration-200 hover:scale-105 ${

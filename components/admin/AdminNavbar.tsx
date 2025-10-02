@@ -237,8 +237,8 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({
       <nav 
         className={`fixed top-0 right-0 z-40 transition-all duration-300 ${
           darkMode ? 'bg-gray-900/95' : 'bg-white/95'
-        } backdrop-blur-xl border-b ${
-          darkMode ? 'border-gray-800' : 'border-gray-200'
+        } backdrop-blur-xl border-b-2 ${
+          darkMode ? 'border-gray-700' : 'border-gray-300'
         }`}
         style={{
           left: sidebarOpen || sidebarHovered ? '240px' : '80px',
