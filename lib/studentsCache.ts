@@ -1,48 +1,56 @@
-// Comprehensive Student interface matching Django backend
+// Student interface matching Django StudentListSerializer exactly (lines 46-58)
 export interface Student {
-  // Core identification
+  // Core fields from Django StudentListSerializer
   id: string;
   student_id: string;
-  full_name: string;
+  full_name: string; // Computed field from get_full_name
   first_name: string;
   last_name: string;
-  
-  // Contact information
   email: string;
-  phone_number: string;
-  phone_country_code?: string;
-  
-  // Personal details
-  date_of_birth?: string;
-  age: number;
-  gender?: string;
-  address?: string;
-  
-  // Academic information
+  phone_number?: string;
   current_class: string;
-  section: string;
-  academic_year?: string;
-  admission_date: string;
-  admission_number?: string;
-  previous_school?: string;
-  
-  // Parent/Guardian information
-  parent_name?: string;
-  parent_phone?: string;
-  parent_email?: string;
-  guardian_type?: string;
-  father_name?: string;
-  mother_name?: string;
-  guardian_name?: string;
-  emergency_contact?: string;
-  
-  // Additional information
-  medical_info?: string;
-  notes?: string;
-  
-  // Status and metadata
+  section?: string;
   status: string;
-  is_active: boolean;
+  admission_date: string;
+  age: number; // Computed field from get_age
+  is_active: boolean; // Computed field
+  profile_picture?: string;
+  
+  // Additional fields for comprehensive display (from StudentDetailSerializer)
+  middle_name?: string;
+  date_of_birth?: string;
+  gender?: string;
+  blood_group?: string;
+  nationality?: string;
+  religion?: string;
+  emergency_contact_name?: string;
+  emergency_contact_phone?: string;
+  emergency_contact_relationship?: string;
+  address_line_1?: string;
+  address_line_2?: string;
+  city?: string;
+  county?: string;
+  postal_code?: string;
+  country?: string;
+  academic_year?: string;
+  roll_number?: string;
+  father_name?: string;
+  father_phone?: string;
+  father_email?: string;
+  father_occupation?: string;
+  mother_name?: string;
+  mother_phone?: string;
+  mother_email?: string;
+  mother_occupation?: string;
+  guardian_name?: string;
+  guardian_phone?: string;
+  guardian_email?: string;
+  guardian_relationship?: string;
+  medical_conditions?: string;
+  medications?: string;
+  doctor_name?: string;
+  doctor_phone?: string;
+  notes?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -177,10 +185,10 @@ export const searchStudents = (students: Student[], query: string): Student[] =>
   
   const searchTerm = query.toLowerCase();
   return students.filter(student => 
-    student.full_name.toLowerCase().includes(searchTerm) ||
+    student.full_name?.toLowerCase().includes(searchTerm) ||
     student.student_id.toLowerCase().includes(searchTerm) ||
     student.email.toLowerCase().includes(searchTerm) ||
-    student.current_class.toLowerCase().includes(searchTerm)
+    student.current_class?.toLowerCase().includes(searchTerm)
   );
 };
 

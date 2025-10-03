@@ -2,15 +2,10 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  Users, Search, Plus, Filter, Download, Upload, Eye, Edit, Trash2,
-  GraduationCap, Phone, Mail, MapPin, Calendar, User, ChevronDown,
-  MoreVertical, CheckCircle, XCircle, Clock, Award, Grid3X3, List,
-  ChevronLeft, ChevronRight, RefreshCw
-} from 'lucide-react';
+import { User, Search, Filter, Grid, List, Plus, Eye, Edit, Trash2, Download, Upload, MoreVertical, ChevronLeft, ChevronRight, Mail, Phone, MapPin, GraduationCap, CheckCircle, XCircle, Clock, Award, RefreshCw, Calendar } from 'lucide-react';
 import AdminNavbar from '@/components/admin/AdminNavbar';
 import AdminSidebar from '@/components/admin/AdminSidebar';
-import AddStudentModal from '@/components/admin/AddStudentModal';
+import MultiStepAddStudentModal from '@/components/admin/MultiStepAddStudentModal';
 import ViewStudentModal from '@/components/admin/ViewStudentModal';
 import EditStudentModal from '@/components/admin/EditStudentModal';
 import { useTheme } from '@/hooks/useTheme';
@@ -102,13 +97,12 @@ export default function StudentsPage() {
     const userData = localStorage.getItem('user');
     if (userData) {
       setUser(JSON.parse(userData));
+      // Only load students if user is authenticated
+      loadStudents();
     } else {
+      // Redirect to login if no user data
       router.push('/login');
-      return;
     }
-    
-    // Instant loading - no delays
-    loadStudents();
   }, [router]);
 
   const handleLogout = () => {
@@ -476,7 +470,7 @@ export default function StudentsPage() {
                       }`}
                       title="Grid View"
                     >
-                      <Grid3X3 className="w-4 h-4" />
+                      <Grid className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => setViewMode('list')}
@@ -594,10 +588,13 @@ export default function StudentsPage() {
                             Student
                           </th>
                           <th className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${darkMode ? 'text-gray-300' : 'text-gray-500'}`}>
-                            Contact
+                            Contact & Address
                           </th>
                           <th className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${darkMode ? 'text-gray-300' : 'text-gray-500'}`}>
-                            Academic
+                            Academic Info
+                          </th>
+                          <th className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${darkMode ? 'text-gray-300' : 'text-gray-500'}`}>
+                            Parents/Guardian
                           </th>
                           <th className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${darkMode ? 'text-gray-300' : 'text-gray-500'}`}>
                             Status
@@ -620,26 +617,68 @@ export default function StudentsPage() {
                                     {student.full_name}
                                   </div>
                                   <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                    {student.student_id}
+                                    {student.student_id} • {student.gender ? (student.gender === 'M' ? 'Male' : student.gender === 'F' ? 'Female' : 'Other') : 'N/A'}
                                   </div>
+                                  {student.date_of_birth && (
+                                    <div className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                                      DOB: {new Date(student.date_of_birth).toLocaleDateString()}
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-900'}`}>
+                                <Mail className="w-4 h-4 inline mr-1" />
                                 {student.email}
                               </div>
-                              <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                {student.phone_number}
-                              </div>
+                              {student.phone_number && (
+                                <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                  <Phone className="w-4 h-4 inline mr-1" />
+                                  {student.phone_number}
+                                </div>
+                              )}
+                              {student.address_line_1 && (
+                                <div className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                                  <MapPin className="w-3 h-3 inline mr-1" />
+                                  {student.city}, {student.county}
+                                </div>
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-900'}`}>
+                                <GraduationCap className="w-4 h-4 inline mr-1" />
                                 {student.current_class}
                               </div>
-                              <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                Section {student.section}
-                              </div>
+                              {student.section && (
+                                <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                  Section {student.section}
+                                </div>
+                              )}
+                              {student.academic_year && (
+                                <div className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                                  {student.academic_year}
+                                </div>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {student.father_name && (
+                                <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-900'}`}>
+                                  <User className="w-4 h-4 inline mr-1" />
+                                  Father: {student.father_name}
+                                </div>
+                              )}
+                              {student.mother_name && (
+                                <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                  <User className="w-4 h-4 inline mr-1" />
+                                  Mother: {student.mother_name}
+                                </div>
+                              )}
+                              {student.emergency_contact_name && (
+                                <div className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                                  Emergency: {student.emergency_contact_name}
+                                </div>
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               {getStatusBadge(student.status, student.is_active)}
@@ -738,11 +777,10 @@ export default function StudentsPage() {
       </div>
 
       {/* Add Student Modal */}
-      <AddStudentModal
+      <MultiStepAddStudentModal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
         onSave={handleAddStudent}
-        darkMode={darkMode}
       />
 
       {/* View Student Modal */}
